@@ -1,0 +1,85 @@
+from django.utils.translation import gettext_lazy as _
+
+SOCIAL_PLATFORM_CHOICES = [
+    ('facebook', _('Facebook')),
+    ('twitter', _('Twitter')),
+    ('linkedin', _('LinkedIn')),
+    ('instagram', _('Instagram')),
+    ('youtube', _('YouTube')),
+    ('tiktok', _('TikTok')),
+    ('website', _('Website')),
+]
+
+COMPANY_SIZE_CHOICES = [
+    ('1-10', _('1-10')),
+    ('11-50', _('11-50')),
+    ('51-100', _('51-100')),
+    ('101-500', _('101-500')),
+    ('501-1000', _('501-1000')),
+    ('1001-5000', _('1001-5000')),
+    ('5001-10000', _('5001-10000')),
+    ('10001+', _('10001+')),
+]
+
+INDUSTRY_CHOICES = [
+    ('aerospace', _('Aerospace')),
+    ('agriculture', _('Agriculture')),
+    ('automotive', _('Automotive')),
+    ('biotechnology', _('Biotechnology')),
+    ('communications', _('Communications')),
+    ('construction', _('Construction')),
+    ('consulting', _('Consulting')),
+    ('consumer_goods', _('Consumer Goods')),
+    ('education', _('Education')),
+    ('energy', _('Energy')),
+    ('entertainment', _('Entertainment')),
+    ('finance', _('Finance')),
+    ('food_and_beverages', _('Food and Beverages')),
+    ('government', _('Government')),
+    ('healthcare', _('Healthcare')),
+    ('hospitality', _('Hospitality')),
+    ('insurance', _('Insurance')),
+    ('legal', _('Legal')),
+    ('logistics', _('Logistics')),
+    ('manufacturing', _('Manufacturing')),
+    ('media', _('Media')),
+    ('mining', _('Mining')),
+    ('ngo_ingo', _('NGO/INGO')),
+    ('non_profit', _('Non-Profit')),
+    ('pharmaceuticals', _('Pharmaceuticals')),
+    ('public_relations', _('Public Relations')),
+    ('real_estate', _('Real Estate')),
+    ('recruitment', _('Recruitment')),
+    ('retail', _('Retail')),
+    ('security', _('Security')),
+    ('sports', _('Sports')),
+    ('technology', _('Technology')),
+    ('telecommunications', _('Telecommunications')),
+    ('textiles', _('Textiles')),
+    ('transportation', _('Transportation')),
+    ('utilities', _('Utilities')),
+    ('waste_management', _('Waste Management')),
+    ('other', _('Other')),
+]
+
+COMPANY_ASPECT_CHOICES = [
+    ('work_life_balance', _('Work/Life Balance')),
+    ('culture_and_values', _('Culture and Values')),
+    ('career_opportunities', _('Career Opportunities')),
+    ('compensation_and_benefits', _('Compensation and Benefits')),
+    ('senior_management', _('Senior Management')),
+    ('reputation', _('Reputation')),
+    ('diversity_and_inclusion', _('Diversity and Inclusion')),
+]
+
+COMPANY_FIELD_NAME_CHOICES = [
+    ('name', _('Name')),
+    ('description', _('Description')),
+    ('logo', _('Logo')),
+    ('cover_image', _('Cover Image')),
+    ('company_size', _('Company Size')),
+    ('industry', _('Industry')),
+    ('contact_info', _('Contact Info')),
+    ('location', _('Location')),
+    ('work_emails', _('Work Emails')),
+]
