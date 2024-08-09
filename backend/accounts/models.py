@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from . import choices
 
 
@@ -36,3 +38,40 @@ class SocialLink(models.Model):
 
     def __str__(self):
         return f"{self.platform}: {self.url}"
+
+    class Meta:
+        unique_together = ('profile', 'platform')
+
+    def clean(self):
+        super().clean()
+
+        # Define URL patterns for each platform
+        url_patterns = {
+            'facebook': 'facebook.com/',
+            'twitter': ('twitter.com/', 'x.com/'),
+            'linkedin': 'linkedin.com/',
+            'instagram': 'instagram.com/',
+            'youtube': 'youtube.com/',
+            'github': 'github.com/',
+            'reddit': 'reddit.com/',
+            'website': '',
+        }
+
+        platform = self.platform
+        url = self.url
+
+        # Validate the URL based on the platform
+        if platform in url_patterns:
+            expected_pattern = url_patterns[platform]
+            if isinstance(expected_pattern, tuple):
+                if not any(pattern in url for pattern in expected_pattern):
+                    raise ValidationError(
+                        _(f"URL for {platform} must contain one of the following: {', '.join(expected_pattern)}"),
+                        code='invalid_url',
+                    )
+            else:
+                if expected_pattern and expected_pattern not in url:
+                    raise ValidationError(
+                        _(f"URL for {platform} must contain '{expected_pattern}'"),
+                        code='invalid_url',
+                    )
