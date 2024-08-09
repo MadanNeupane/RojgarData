@@ -115,7 +115,7 @@ class CompanyUpdateSuggestion(models.Model):
     reviewed = models.BooleanField(default=False)
 
     def __str__(self):
-        return _(f"Suggestion by {self.user.user.username} for {self.company.name} ({self.field_name})")
+        return _(f"Suggestion by {self.suggested_by.user.username} for {self.company.name} ({self.field_name})")
 
 
 class ReviewSpamReport(models.Model):
@@ -144,7 +144,7 @@ class CompanyQuestion(models.Model):
     answered = models.BooleanField(default=False)
 
     def __str__(self):
-        return _(f"Question by {self.user.user.username} to {self.company.name}")
+        return _(f"Question by {self.asked_by.user.username} to {self.company.name}")
 
 
 class CompanyAnswer(models.Model):
