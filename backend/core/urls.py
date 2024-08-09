@@ -18,6 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from debug_toolbar.toolbar import debug_toolbar_urls
 
+admin.site.site_header = "Rojgar Data Admin"
+admin.site.site_title = "Rojgar Data Admin Portal"
+admin.site.index_title = "Welcome to Rojgar Data Admin Portal"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls')),
+    path('accounts/', include('djoser.urls')),
+    path('accounts/', include('djoser.urls.jwt')),
 ] + debug_toolbar_urls()

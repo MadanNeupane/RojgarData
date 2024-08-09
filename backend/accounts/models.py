@@ -5,32 +5,34 @@ from . import choices
 
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    role = models.CharField(max_length=10, choices=choices.USER_ROLE_CHOICES, default='user')
     subscription_type = models.CharField(max_length=10, choices=choices.ACCOUNT_SUBSCRIPTION_TYPE_CHOICES, default='free')
     has_contributed = models.BooleanField(default=False, help_text="Flag to indicate if the user has made a donation")
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    resume = models.FileField(upload_to='resumes/', blank=True, null=True)
-    cover_letter = models.FileField(upload_to='cover_letters/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    birth_date = models.DateField(blank=True, null=True)
+    bio = models.TextField(blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    reputation_points = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f'{self.user.username}\'s Profile'
-
-
-class Experience(models.Model):
-    profile = models.ForeignKey(Profile, related_name='experiences', on_delete=models.CASCADE)
-    job_title = models.CharField(max_length=255)
-    company_name = models.CharField(max_length=255)
-    start_date = models.DateField()
-    end_date = models.DateField(blank=True, null=True)  # null for current jobs
-    description = models.TextField(blank=True)
+    def add_reputation(self, amount):
+        self.reputation_points += amount
+        self.save()
 
     def __str__(self):
-        return f'{self.profile.user.username}\'s Experience at {self.company_name}'
+        return f"{self.user.username}'s Profile"
 
-    class Meta:
-        ordering = ['-start_date']
+
+class SocialLink(models.Model):
+    profile = models.ForeignKey(Profile, related_name='social_links', on_delete=models.CASCADE)
+    platform = models.CharField(max_length=255, choices=choices.SOCIAL_PLATFORM_CHOICES)
+    url = models.URLField()
+
+    def __str__(self):
+        return f"{self.platform}: {self.url}"
