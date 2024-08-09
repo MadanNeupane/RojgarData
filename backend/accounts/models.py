@@ -5,7 +5,7 @@ from . import choices
 
 class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
-    role = models.CharField(max_length=10, choices=choices.USER_ROLE_CHOICES, default='user')
+    role = models.CharField(max_length=10, choices=choices.USER_ROLE_CHOICES, default='employee')
     subscription_type = models.CharField(max_length=10, choices=choices.ACCOUNT_SUBSCRIPTION_TYPE_CHOICES, default='free')
     has_contributed = models.BooleanField(default=False, help_text="Flag to indicate if the user has made a donation")
 
