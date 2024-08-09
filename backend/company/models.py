@@ -16,13 +16,16 @@ class Company(models.Model):
     cover_image = models.ImageField(upload_to='company_cover_images/', null=True, blank=True)
     company_size = models.CharField(max_length=10, choices=choices.COMPANY_SIZE_CHOICES)
     industry = models.CharField(max_length=255, choices=choices.INDUSTRY_CHOICES)
-    contact_info = models.TextField()
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
     location = models.CharField(max_length=255)
     work_emails = models.JSONField(blank=True, null=True)  # List of work email domains
     visit_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name_plural = 'Companies'
 
 
 class SocialLink(models.Model):
@@ -104,7 +107,7 @@ class CompanyUpdateSuggestion(models.Model):
     '''
 
     company = models.ForeignKey(Company, related_name='update_suggestions', on_delete=models.CASCADE)
-    user = models.ForeignKey(Profile, related_name='update_suggestions', on_delete=models.CASCADE)
+    suggested_by = models.ForeignKey(Profile, related_name='update_suggestions', on_delete=models.CASCADE)
     field_name = models.CharField(max_length=255, choices=choices.COMPANY_FIELD_NAME_CHOICES)
     suggested_value = models.TextField(help_text=_("Enter the new value for the field. In case of images, provide the link to the new image"))
     reason = models.TextField(blank=True, null=True)
@@ -135,7 +138,7 @@ class CompanyQuestion(models.Model):
     '''
 
     company = models.ForeignKey(Company, related_name='questions', on_delete=models.CASCADE)
-    user = models.ForeignKey(Profile, related_name='questions', on_delete=models.CASCADE)
+    asked_by = models.ForeignKey(Profile, related_name='questions', on_delete=models.CASCADE)
     question_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     answered = models.BooleanField(default=False)
