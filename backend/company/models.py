@@ -130,6 +130,9 @@ class ReviewSpamReport(models.Model):
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('review', 'reporter')
+
     def __str__(self):
         return _(f"Spam report by {self.reporter.user.username} for {self.review}")
 
