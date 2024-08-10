@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext as _ # This one works, if others don't I'll use this everywhere
 from accounts.models import Profile
 from . import choices
 
@@ -20,6 +21,7 @@ class Company(models.Model):
     location = models.CharField(max_length=255)
     work_emails = models.JSONField(blank=True, null=True)  # List of work email domains
     visit_count = models.PositiveIntegerField(default=0)
+    admins = models.ManyToManyField(Profile, related_name='admin_companies', blank=True)
 
     def __str__(self):
         return self.name
@@ -38,7 +40,7 @@ class SocialLink(models.Model):
     url = models.URLField()
 
     def __str__(self):
-        return f"{self.platform}: {self.url}"
+        return f"{self.company} - {self.platform}: {self.url}"
 
     class Meta:
         unique_together = ('company', 'platform')
@@ -81,7 +83,7 @@ class SocialLink(models.Model):
 class CompanyReview(models.Model):
     company = models.ForeignKey(Company, related_name='reviews', on_delete=models.CASCADE)
     user = models.ForeignKey(Profile, related_name='company_reviews', on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
     review_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -95,7 +97,7 @@ class CompanyReview(models.Model):
 class ReviewAspectScore(models.Model):
     review = models.ForeignKey(CompanyReview, related_name='aspect_scores', on_delete=models.CASCADE)
     aspect = models.CharField(max_length=50, choices=choices.COMPANY_ASPECT_CHOICES)
-    score = models.PositiveIntegerField(default=0)
+    score = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
 
     def __str__(self):
         return _(f"{self.review} - {self.get_aspect_display()} - {self.score}")
