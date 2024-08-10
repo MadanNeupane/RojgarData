@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext as _
 from company.models import Company
 from accounts.models import Profile
 from employee.models import EmployeeProfile
@@ -38,4 +39,19 @@ class JobApplication(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Application by {self.applicant.profile.user.username} for {self.job_post.title}"
+        return _(f'{self.applicant.profile.user.username} applied for {self.job_post.title}')
+
+    class Meta:
+        unique_together = ('job_post', 'applicant')
+
+
+class JobBookmark(models.Model):
+    job_post = models.ForeignKey(JobPost, related_name='bookmarked_by', on_delete=models.CASCADE)
+    employee = models.ForeignKey(EmployeeProfile, related_name='bookmarks', on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('job_post', 'employee')
+
+    def __str__(self):
+        return _(f'{self.employee.profile.user.username} bookmarked {self.job_post.title}')
