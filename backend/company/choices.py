@@ -1,4 +1,4 @@
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext as _
 
 SOCIAL_PLATFORM_CHOICES = [
     ('facebook', _('Facebook')),
