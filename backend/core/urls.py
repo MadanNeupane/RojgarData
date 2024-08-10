@@ -13,6 +13,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('djoser.urls')),
     path('accounts/', include('djoser.urls.jwt')),
+    path('employee/', include('employee.urls')),
 ]
 
 if settings.DEBUG:
