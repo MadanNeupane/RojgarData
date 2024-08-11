@@ -1,7 +1,7 @@
-from rest_framework import routers
-
+from rest_framework.routers import DefaultRouter
 from .views import EmployeeProfileViewSet
 
-router = routers.DefaultRouter()
-router.register('', EmployeeProfileViewSet, basename='employee')
+router = DefaultRouter()
+router.register(r'profiles', EmployeeProfileViewSet, basename='employee-profile')
+
 urlpatterns = router.urls

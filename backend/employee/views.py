@@ -6,21 +6,34 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, NotFound
 from .models import EmployeeProfile
 from .serializers import EmployeeProfileSerializer
-from .permissions import IsAdminOrIsSelf
+from .permissions import ProfileVisibilityPermission
 
 
 class EmployeeProfileViewSet(viewsets.ModelViewSet):
     queryset = EmployeeProfile.objects.all()
     serializer_class = EmployeeProfileSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrIsSelf]
+    permission_classes = [ProfileVisibilityPermission]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     def get_queryset(self):
-        # Admins can view all profiles
-        if self.request.user.is_staff:
-            return EmployeeProfile.objects.all()
+        # Start with public profiles
+        visible_profiles = EmployeeProfile.objects.filter(profile_visibility=EmployeeProfile.PUBLIC)
 
-        # Users can only view their own profile
-        return EmployeeProfile.objects.filter(profile__user=self.request.user)
+        if self.request.user.is_authenticated:
+            # Include authenticated-visible profiles
+            visible_profiles = visible_profiles | EmployeeProfile.objects.filter(profile_visibility=EmployeeProfile.AUTHENTICATED)
+
+            # If the user is an employer, include employer-visible profiles
+            if self.request.user.role == 'employer':
+                visible_profiles = visible_profiles | EmployeeProfile.objects.filter(profile_visibility=EmployeeProfile.EMPLOYER)
+
+            # Include self profile in query
+            visible_profiles = visible_profiles | EmployeeProfile.objects.filter(profile__user=self.request.user)
+
+        # Distinct to prevent duplicate profiles
+        return visible_profiles.distinct()
 
     def perform_update(self, serializer):
         # Ensure the user can only update their own profile
@@ -50,4 +63,3 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             raise NotFound(_('Employee profile not found.'))
-
