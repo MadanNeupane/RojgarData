@@ -13,18 +13,18 @@ class JobPostSerializer(serializers.ModelSerializer):
         model = JobPost
         fields = [
             'id', 'company', 'posted_by', 'title', 'description', 'skills',
-            'location', 'salary', 'deadline', 'is_active', 'created_at'
+            'location', 'salary', 'deadline', 'is_active', 'created_at', 'view_count', 'total_bookmarks'
         ]
-        read_only_fields = ['id', 'created_at', 'posted_by']
+        read_only_fields = ['id', 'created_at', 'posted_by', 'view_count']
 
 class JobApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobApplication
-        fields = ['id', 'job_post', 'applicant', 'cover_letter', 'resume', 'submitted_at']
+        fields = ['id', 'job_post', 'applicant', 'cover_letter', 'resume', 'submitted_at', 'status']
         read_only_fields = ['id', 'submitted_at', 'applicant']
 
 class JobBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobBookmark
-        fields = ['id', 'job_post', 'employee', 'added_at']
-        read_only_fields = ['id', 'added_at', 'employee']
+        fields = ['id', 'job_post', 'employee', 'created_at']
+        read_only_fields = ['id', 'created_at', 'employee']
