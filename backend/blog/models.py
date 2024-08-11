@@ -33,6 +33,7 @@ class BlogPostBookmark(models.Model):
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bookmarked_posts', on_delete=models.CASCADE)
     blog_post = models.ForeignKey(BlogPost, related_name='bookmarks', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'blog_post')  # Ensure a user can bookmark a blog post only once

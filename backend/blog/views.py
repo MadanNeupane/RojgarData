@@ -1,9 +1,9 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from accounts.models import Profile
-from .models import BlogPost, Tag, GuestArticleSubmission, Reaction
+from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, BlogPostBookmark
 from .serializers import (
     BlogPostSerializer, TagSerializer, GuestArticleSubmissionSerializer,
     ReactionSerializer, BlogPostBookmarkSerializer
@@ -31,16 +31,29 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def bookmark(self, request, pk=None):
         blog_post = self.get_object()
-        profile = Profile.objects.get(user=request.user)
-        profile.bookmarked_posts.add(blog_post)
+        user = request.user
+        bookmark, created = BlogPostBookmark.objects.get_or_create(user=user, blog_post=blog_post)
+        if not created:
+            return Response({'status': 'already bookmarked'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status': 'bookmarked'})
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def remove_bookmark(self, request, pk=None):
         blog_post = self.get_object()
-        profile = Profile.objects.get(user=request.user)
-        profile.bookmarked_posts.remove(blog_post)
-        return Response({'status': 'bookmark removed'})
+        user = request.user
+        try:
+            bookmark = BlogPostBookmark.objects.get(user=user, blog_post=blog_post)
+            bookmark.delete()
+            return Response({'status': 'bookmark removed'})
+        except BlogPostBookmark.DoesNotExist:
+            return Response({'status': 'bookmark not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def my_bookmarks(self, request):
+        user = request.user
+        bookmarks = BlogPostBookmark.objects.filter(user=user)
+        serializer = BlogPostBookmarkSerializer(bookmarks, many=True)
+        return Response(serializer.data)
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
@@ -58,6 +71,12 @@ class GuestArticleSubmissionViewSet(viewsets.ModelViewSet):
             serializer.save(author=self.request.user)
         else:
             serializer.save()
+
+    # Only allow staff members to view guest article submissions.
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return self.queryset
+        return self.queryset.none()
 
 class ReactionViewSet(viewsets.ModelViewSet):
     queryset = Reaction.objects.all()

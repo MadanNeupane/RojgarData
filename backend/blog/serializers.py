@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import BlogPost, Tag, GuestArticleSubmission, Reaction
+from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, BlogPostBookmark
 from accounts.models import Profile
 
 class TagSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class BlogPostSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, required=False)
     author_name = serializers.SerializerMethodField()
     total_claps = serializers.IntegerField(read_only=True)
     total_bookmarks = serializers.IntegerField(read_only=True)
@@ -33,7 +33,7 @@ class ReactionSerializer(serializers.ModelSerializer):
         return value
 
 class GuestArticleSubmissionSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, required=False)
 
     class Meta:
         model = GuestArticleSubmission
@@ -42,5 +42,6 @@ class GuestArticleSubmissionSerializer(serializers.ModelSerializer):
 
 class BlogPostBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BlogPost
-        fields = ['id', 'title', 'author']
+        model = BlogPostBookmark
+        fields = ['id', 'blog_post', 'user', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
