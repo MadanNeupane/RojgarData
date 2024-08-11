@@ -23,6 +23,23 @@ class BlogPost(models.Model):
     def total_claps(self):
         return sum(reaction.claps for reaction in self.reactions.all())
 
+    def total_bookmarks(self):
+        return self.bookmarks.count()
+
+
+class BlogPostBookmark(models.Model):
+    """
+    Stores bookmarks for each blog post by users.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='bookmarked_posts', on_delete=models.CASCADE)
+    blog_post = models.ForeignKey(BlogPost, related_name='bookmarks', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'blog_post')  # Ensure a user can bookmark a blog post only once
+
+    def __str__(self):
+        return _(f"{self.user.username} bookmarked {self.blog_post.title}")
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=255)
