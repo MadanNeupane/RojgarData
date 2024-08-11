@@ -55,6 +55,37 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         serializer = BlogPostBookmarkSerializer(bookmarks, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def react(self, request, pk=None):
+        blog_post = self.get_object()
+        user = request.user
+
+        claps = request.data.get('claps', 1)  # Default to 1 if not specified
+        if not 1 <= claps <= 10:
+            return Response({'detail': 'Claps must be between 1 and 10.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        reaction, created = Reaction.objects.get_or_create(user=user, blog_post=blog_post)
+        if not created:
+            return Response({'status': 'already reacted'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the number of claps
+        reaction.claps = claps
+        reaction.save()
+
+        return Response({'status': 'reacted', 'claps': reaction.claps})
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def remove_reaction(self, request, pk=None):
+        blog_post = self.get_object()
+        user = request.user
+        try:
+            reaction = Reaction.objects.get(user=user, blog_post=blog_post)
+            reaction.delete()
+            return Response({'status': 'reaction removed'})
+        except Reaction.DoesNotExist:
+            return Response({'status': 'reaction not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -77,11 +108,3 @@ class GuestArticleSubmissionViewSet(viewsets.ModelViewSet):
         if self.request.user.is_staff:
             return self.queryset
         return self.queryset.none()
-
-class ReactionViewSet(viewsets.ModelViewSet):
-    queryset = Reaction.objects.all()
-    serializer_class = ReactionSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
