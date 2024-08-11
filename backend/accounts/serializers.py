@@ -10,7 +10,7 @@ class UserSerializer(BaseUserSerializer):
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         model = User
-        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name', 'role', 'subscription_type']
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name', 'role']
 
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
