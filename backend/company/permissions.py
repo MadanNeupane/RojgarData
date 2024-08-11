@@ -1,5 +1,7 @@
 from rest_framework.permissions import BasePermission
+from rest_framework.permissions import SAFE_METHODS
 from accounts.models import Profile
+
 
 class IsCompanyAdminOrReadOnly(BasePermission):
     """
@@ -8,9 +10,11 @@ class IsCompanyAdminOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed for any request
-        if request.method in ['GET', 'HEAD', 'OPTIONS']:
+        if request.method in SAFE_METHODS:
             return True
         # Write permissions are only allowed to company admins
+        if not request.user.is_authenticated:
+            return False
         return request.user.is_staff or request.user.profile in obj.admins.all()
 
 

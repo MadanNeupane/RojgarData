@@ -20,14 +20,18 @@ class Company(models.Model):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     location = models.CharField(max_length=255)
     work_emails = models.JSONField(blank=True, null=True)  # List of work email domains
-    visit_count = models.PositiveIntegerField(default=0)
+    view_count = models.PositiveIntegerField(default=0)
     admins = models.ManyToManyField(Profile, related_name='admin_companies', blank=True)
+    followers = models.ManyToManyField(Profile, related_name='followed_companies', blank=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name_plural = 'Companies'
+
+    def total_followers(self):
+        return self.followers.count()
 
 
 class SocialLink(models.Model):
@@ -139,28 +143,47 @@ class ReviewSpamReport(models.Model):
 
 class CompanyQuestion(models.Model):
     '''
-    Allows users to ask questions to a company
+    Stores questions asked by users about a company.
     '''
 
     company = models.ForeignKey(Company, related_name='questions', on_delete=models.CASCADE)
-    asked_by = models.ForeignKey(Profile, related_name='questions', on_delete=models.CASCADE)
     question_text = models.TextField()
+    asked_by = models.ForeignKey(Profile, related_name='questions', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    answered = models.BooleanField(default=False)
+    upvotes = models.ManyToManyField(Profile, related_name='upvoted_questions', blank=True)
+    downvotes = models.ManyToManyField(Profile, related_name='downvoted_questions', blank=True)
 
     def __str__(self):
-        return _(f"Question by {self.asked_by.user.username} to {self.company.name}")
+        return _(f"Question by {self.asked_by.user.username} about {self.company.name}")
+
+    @property
+    def upvote_count(self):
+        return self.upvotes.count()
+
+    @property
+    def downvote_count(self):
+        return self.downvotes.count()
 
 
 class CompanyAnswer(models.Model):
     '''
-    Stores answers from companies to user questions
+    Stores answers from companies to user questions.
     '''
 
-    question = models.OneToOneField(CompanyQuestion, related_name='answer', on_delete=models.CASCADE)
+    question = models.ForeignKey(CompanyQuestion, related_name='answers', on_delete=models.CASCADE)
     answered_by = models.ForeignKey(Profile, related_name='answers', on_delete=models.CASCADE)
     answer_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    upvotes = models.ManyToManyField(Profile, related_name='upvoted_answers', blank=True)
+    downvotes = models.ManyToManyField(Profile, related_name='downvoted_answers', blank=True)
 
     def __str__(self):
         return _(f"Answer by {self.answered_by.user.username} to question {self.question.id}")
+
+    @property
+    def upvote_count(self):
+        return self.upvotes.count()
+
+    @property
+    def downvote_count(self):
+        return self.downvotes.count()

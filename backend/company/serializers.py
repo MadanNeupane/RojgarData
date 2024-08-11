@@ -11,7 +11,6 @@ from .models import (
     CompanyAnswer,
 )
 
-
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLink
@@ -21,7 +20,6 @@ class ReviewAspectScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewAspectScore
         fields = ['aspect', 'score']
-
 
 class CompanyReviewSerializer(serializers.ModelSerializer):
     aspect_scores = ReviewAspectScoreSerializer(many=True)
@@ -49,13 +47,11 @@ class CompanyReviewSerializer(serializers.ModelSerializer):
             ReviewAspectScore.objects.create(review=review, **aspect_score_data)
         return review
 
-
 class CompanyUpdateSuggestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyUpdateSuggestion
         fields = ['id', 'company', 'suggested_by', 'field_name', 'suggested_value', 'reason', 'created_at', 'reviewed']
         read_only_fields = ['id', 'created_at', 'suggested_by', 'reviewed']
-
 
 class ReviewSpamReportSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,32 +60,37 @@ class ReviewSpamReportSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'reporter']
 
 
-class CompanyQuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CompanyQuestion
-        fields = ['id', 'company', 'asked_by', 'question_text', 'created_at', 'answered']
-        read_only_fields = ['id', 'created_at', 'asked_by', 'answered']
-
-
 class CompanyAnswerSerializer(serializers.ModelSerializer):
-    question = CompanyQuestionSerializer(read_only=True)
+    upvote_count = serializers.IntegerField(read_only=True)
+    downvote_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = CompanyAnswer
-        fields = ['id', 'question', 'answered_by', 'answer_text', 'created_at']
-        read_only_fields = ['id', 'created_at', 'answered_by']
+        fields = ['id', 'answer_text', 'created_at', 'upvote_count', 'downvote_count']
+        read_only_fields = ['id', 'created_at', 'upvote_count', 'downvote_count']
 
+
+class CompanyQuestionSerializer(serializers.ModelSerializer):
+    answers = CompanyAnswerSerializer(many=True, read_only=True)
+    upvote_count = serializers.IntegerField(read_only=True)
+    downvote_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = CompanyQuestion
+        fields = ['id', 'question_text', 'created_at', 'answers', 'upvote_count', 'downvote_count']
+        read_only_fields = ['id', 'created_at', 'upvote_count', 'downvote_count']
 
 
 class CompanySerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, read_only=True)
     reviews = CompanyReviewSerializer(many=True, read_only=True)
     questions = CompanyQuestionSerializer(many=True, read_only=True)
-    visit_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Company
         fields = [
             'id', 'name', 'description', 'logo', 'cover_image', 'company_size', 'industry',
-            'phone_number', 'location', 'work_emails', 'visit_count', 'social_links', 'reviews', 'questions',
+            'phone_number', 'location', 'work_emails', 'view_count', 'social_links', 'reviews', 'questions', 'total_followers'
         ]
+
+    read_only_fields = ['id', 'view_count', 'total_followers']
