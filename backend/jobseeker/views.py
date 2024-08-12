@@ -4,14 +4,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied, NotFound
-from .models import EmployeeProfile
-from .serializers import EmployeeProfileSerializer
+from .models import JobseekerProfile
+from .serializers import JobseekerProfileSerializer
 from .permissions import ProfileVisibilityPermission
 
 
-class EmployeeProfileViewSet(viewsets.ModelViewSet):
-    queryset = EmployeeProfile.objects.all()
-    serializer_class = EmployeeProfileSerializer
+class JobseekerProfileViewSet(viewsets.ModelViewSet):
+    queryset = JobseekerProfile.objects.all()
+    serializer_class = JobseekerProfileSerializer
     permission_classes = [ProfileVisibilityPermission]
 
     def get_serializer_context(self):
@@ -19,18 +19,18 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Start with public profiles
-        visible_profiles = EmployeeProfile.objects.filter(profile_visibility=EmployeeProfile.PUBLIC)
+        visible_profiles = JobseekerProfile.objects.filter(profile_visibility=JobseekerProfile.PUBLIC)
 
         if self.request.user.is_authenticated:
             # Include authenticated-visible profiles
-            visible_profiles = visible_profiles | EmployeeProfile.objects.filter(profile_visibility=EmployeeProfile.AUTHENTICATED)
+            visible_profiles = visible_profiles | JobseekerProfile.objects.filter(profile_visibility=JobseekerProfile.AUTHENTICATED)
 
             # If the user is an employer, include employer-visible profiles
             if self.request.user.role == 'employer':
-                visible_profiles = visible_profiles | EmployeeProfile.objects.filter(profile_visibility=EmployeeProfile.EMPLOYER)
+                visible_profiles = visible_profiles | JobseekerProfile.objects.filter(profile_visibility=JobseekerProfile.EMPLOYER)
 
             # Include self profile in query
-            visible_profiles = visible_profiles | EmployeeProfile.objects.filter(profile__user=self.request.user)
+            visible_profiles = visible_profiles | JobseekerProfile.objects.filter(profile__user=self.request.user)
 
         # Distinct to prevent duplicate profiles
         return visible_profiles.distinct()
@@ -46,13 +46,13 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
     def me(self, request):
         """
         Get the profile of the currently authenticated user.
-        If the profile does not exist for an employee user, create it.
+        If the profile does not exist for an jobseeker user, create it.
         """
         user = request.user
 
-        # Check if the user has the role 'employee'
-        if user.role == 'employee':
-            profile, created = EmployeeProfile.objects.get_or_create(profile__user=user)
+        # Check if the user has the role 'jobseeker'
+        if user.role == 'jobseeker':
+            profile, created = JobseekerProfile.objects.get_or_create(profile__user=user)
 
             # If the profile was created, populate default values if needed
             if created:
@@ -62,4 +62,4 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(profile)
             return Response(serializer.data)
         else:
-            raise NotFound(_('Employee profile not found.'))
+            raise NotFound(_('Jobseeker profile not found.'))

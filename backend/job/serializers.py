@@ -26,5 +26,5 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 class JobBookmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobBookmark
-        fields = ['id', 'job_post', 'employee', 'created_at']
-        read_only_fields = ['id', 'created_at', 'employee']
+        fields = ['id', 'job_post', 'jobseeker', 'created_at']
+        read_only_fields = ['id', 'created_at', 'jobseeker']

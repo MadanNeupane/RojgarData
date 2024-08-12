@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import EmployeeProfile, Skill, Language, Experience, Education, Training
+from .models import JobseekerProfile, Skill, Language, Experience, Education, Training
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,7 +26,7 @@ class TrainingSerializer(serializers.ModelSerializer):
         model = Training
         fields = ['id', 'institution', 'title', 'start_date', 'end_date', 'description', 'current']
 
-class EmployeeProfileSerializer(serializers.ModelSerializer):
+class JobseekerProfileSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True, read_only=True)
     languages = LanguageSerializer(many=True, read_only=True)
     experiences = ExperienceSerializer(many=True, read_only=True)
@@ -34,7 +34,7 @@ class EmployeeProfileSerializer(serializers.ModelSerializer):
     trainings = TrainingSerializer(many=True, read_only=True)
 
     class Meta:
-        model = EmployeeProfile
+        model = JobseekerProfile
         fields = ['id', 'profile', 'resume', 'skills', 'languages', 'experiences', 'educations', 'trainings', 'profile_visibility', 'job_title', 'preferred_jobs']
 
     def get_resume(self, obj):

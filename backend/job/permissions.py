@@ -32,6 +32,6 @@ class IsAdminOrCompanyAdmin(BasePermission):
 
         return False
 
-class IsEmployee(BasePermission):
+class IsJobseeker(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 'employee'
+        return request.user.role == 'jobseeker'

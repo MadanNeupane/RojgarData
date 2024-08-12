@@ -5,7 +5,7 @@ BLOG_CATEGORY_CHOICES = (
     ('company_news', _('Company News')),
     ('industry_trends', _('Industry Trends')),
     ('career_advice', _('Career Advice')),
-    ('employee_stories', _('Employee Stories')),
+    ('jobseeker_stories', _('Jobseeker Stories')),
     ('workplace_culture', _('Workplace Culture')),
     ('job_search_tips', _('Job Search Tips')),
     ('interview_tips', _('Interview Tips')),

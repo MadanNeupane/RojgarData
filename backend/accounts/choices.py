@@ -1,7 +1,7 @@
 from django.utils.translation import gettext as _
 
 USER_ROLE_CHOICES = [
-    ('employee', _('Employee')),
+    ('jobseeker', _('Jobseeker')),
     ('employer', _('Employer')),
     ('writer', _('Writer')),
     ('admin', _('Admin')),

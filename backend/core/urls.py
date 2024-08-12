@@ -13,7 +13,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('djoser.urls')),
     path('accounts/', include('djoser.urls.jwt')),
-    path('employee/', include('employee.urls')),
+    path('jobseeker/', include('jobseeker.urls')),
     path('company/', include('company.urls')),
     path('salary/', include('salary.urls')),
     path('job/', include('job.urls')),

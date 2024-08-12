@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # Custom apps
     'accounts',
-    'employee',
+    'jobseeker',
     'company',
     'job',
     'salary',

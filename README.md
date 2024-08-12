@@ -7,7 +7,7 @@ RojgarData is a dedicated platform tailored for Nepali companies, offering a spa
 RojgarData is designed to enhance the job-seeking experience by providing:
 
 - **Detailed Company Profiles**: Users can view comprehensive profiles of Nepali companies, including descriptions, types, contact information, and locations.
-- **Anonymous Reviews**: Employees and former employees can submit anonymous reviews about companies, providing insights into work-life balance, culture, management, and more.
+- **Anonymous Reviews**: Jobseekers and former jobseekers can submit anonymous reviews about companies, providing insights into work-life balance, culture, management, and more.
 - **Salary Insights**: Users can anonymously submit and explore salary data, allowing for dynamic entries (monthly, weekly, hourly, annual) in various currencies (NPR, USD, EUR). Submissions from verified company email domains are instantly approved.
 - **Job Opportunities**: Users can browse and apply for job postings, submit resumes, and cover letters directly through the platform.
 - **Community Q&A**: A question and answer section where users can discuss companies and job roles.
@@ -15,7 +15,7 @@ RojgarData is designed to enhance the job-seeking experience by providing:
 
 ## Features
 
-- **Employer Branding**: Companies can maintain their profiles and engage with potential employees.
+- **Employer Branding**: Companies can maintain their profiles and engage with potential jobseekers.
 - **User Engagement**: One review per company per user to ensure authenticity and reduce spam.
 - **Contributions and Recognition**: Users who contribute to the platform's operational costs are recognized with a special tag on their profiles.
 - **Future Monetization**: The platform has plans to introduce premium features and subscription packages for advanced analytics and insights.

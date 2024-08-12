@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import Profile
 
-class EmployeeProfile(models.Model):
+class JobseekerProfile(models.Model):
 
     PUBLIC = 'public'
     EMPLOYER = 'employer'

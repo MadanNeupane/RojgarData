@@ -20,11 +20,11 @@ class IsCompanyAdminOrReadOnly(BasePermission):
 
 class CanAskQuestionsOrReview(BasePermission):
     """
-    Custom permission to allow only employees to ask questions and write reviews.
+    Custom permission to allow only jobseekers to ask questions and write reviews.
     """
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'employee'
+        return request.user.is_authenticated and request.user.role == 'jobseeker'
 
 
 class CanSubmitSuggestions(BasePermission):

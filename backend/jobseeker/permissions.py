@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from .models import EmployeeProfile
+from .models import JobseekerProfile
 
 class ProfileVisibilityPermission(BasePermission):
     """
@@ -17,11 +17,11 @@ class ProfileVisibilityPermission(BasePermission):
 
         # Handle profile visibility
         if request.method == 'GET':
-            if obj.profile_visibility == EmployeeProfile.PUBLIC:
+            if obj.profile_visibility == JobseekerProfile.PUBLIC:
                 return True
-            elif obj.profile_visibility == EmployeeProfile.AUTHENTICATED:
+            elif obj.profile_visibility == JobseekerProfile.AUTHENTICATED:
                 return request.user.is_authenticated
-            elif obj.profile_visibility == EmployeeProfile.EMPLOYER:
+            elif obj.profile_visibility == JobseekerProfile.EMPLOYER:
                 # Check if the user is an employer based on their role
                 return request.user.role == 'employer'
 

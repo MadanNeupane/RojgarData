@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext as _
 from company.models import Company
 from accounts.models import Profile
-from employee.models import EmployeeProfile
+from jobseeker.models import JobseekerProfile
 
 
 class JobPost(models.Model):
@@ -43,7 +43,7 @@ class JobApplication(models.Model):
     ]
 
     job_post = models.ForeignKey(JobPost, related_name='applications', on_delete=models.CASCADE)
-    applicant = models.ForeignKey(EmployeeProfile, related_name='job_applications', on_delete=models.CASCADE)
+    applicant = models.ForeignKey(JobseekerProfile, related_name='job_applications', on_delete=models.CASCADE)
     cover_letter = models.TextField()
     resume = models.FileField(upload_to='job_applications/', blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
@@ -58,11 +58,11 @@ class JobApplication(models.Model):
 
 class JobBookmark(models.Model):
     job_post = models.ForeignKey(JobPost, related_name='bookmarks', on_delete=models.CASCADE)
-    employee = models.ForeignKey(EmployeeProfile, related_name='job_bookmarks', on_delete=models.CASCADE)  # Changed related_name
+    jobseeker = models.ForeignKey(JobseekerProfile, related_name='job_bookmarks', on_delete=models.CASCADE)  # Changed related_name
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('job_post', 'employee')
+        unique_together = ('job_post', 'jobseeker')
 
     def __str__(self):
-        return _(f'{self.employee.profile.user.username} bookmarked {self.job_post.title}')
+        return _(f'{self.jobseeker.profile.user.username} bookmarked {self.job_post.title}')

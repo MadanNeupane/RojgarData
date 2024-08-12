@@ -5,9 +5,9 @@ from rest_framework.exceptions import ValidationError
 from .models import SalarySubmission, SalaryReport
 from .serializers import SalarySubmissionSerializer, SalaryReportSerializer
 
-class IsEmployee(BasePermission):
+class IsJobseeker(BasePermission):
     def has_permission(self, request, view):
-        return request.user.role == 'employee'
+        return request.user.role == 'jobseeker'
 
 class IsAdminOrOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -19,7 +19,7 @@ class SalarySubmissionViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create']:
-            permission_classes = [IsAuthenticated, IsEmployee]
+            permission_classes = [IsAuthenticated, IsJobseeker]
         elif self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsAdminOrOwner]
         else:
