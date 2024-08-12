@@ -1,11 +1,20 @@
 from rest_framework import serializers
 from djoser.serializers import UserSerializer as BaseUserSerializer, UserCreateSerializer as BaseUserCreateSerializer
-from .models import Profile, SocialLink, User
+from .models import Profile, SocialLink, User, VerificationRequest
 
 class UserSerializer(BaseUserSerializer):
     class Meta(BaseUserSerializer.Meta):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'subscription_type', 'has_contributed']
+
+    def update(self, instance, validated_data):
+        # Regular users cannot update these fields
+        if not self.context['request'].user.is_staff:
+            validated_data.pop('role', None)
+            validated_data.pop('subscription_type', None)
+            validated_data.pop('has_contributed', None)
+
+        return super().update(instance, validated_data)
 
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
@@ -41,12 +50,12 @@ class SocialLinkSerializer(serializers.ModelSerializer):
             if isinstance(expected_pattern, tuple):
                 if not any(pattern in url for pattern in expected_pattern):
                     raise serializers.ValidationError(
-                        { 'url': f"URL for {platform} must contain one of the following: {', '.join(expected_pattern)}" }
+                        {'url': f"URL for {platform} must contain one of the following: {', '.join(expected_pattern)}"}
                     )
             else:
                 if expected_pattern and expected_pattern not in url:
                     raise serializers.ValidationError(
-                        { 'url': f"URL for {platform} must contain '{expected_pattern}'" }
+                        {'url': f"URL for {platform} must contain '{expected_pattern}'"}
                     )
 
         return data
@@ -56,8 +65,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['id', 'profile_picture', 'birth_date', 'phone_number', 'address', 'bio', 'reputation_points', 'social_links']
-        read_only_fields = ['reputation_points']
+        fields = [
+            'id', 'user', 'profile_picture', 'birth_date', 'phone_number', 'address', 'bio',
+            'reputation_points', 'social_links', 'is_verified', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['user', 'reputation_points', 'is_verified', 'created_at', 'updated_at']
 
     def update(self, instance, validated_data):
         social_links_data = validated_data.pop('social_links', [])
@@ -78,3 +90,12 @@ class ProfileSerializer(serializers.ModelSerializer):
             )
 
         return instance
+
+    def validate(self, data):
+        user_data = data.get('user', {})
+        if not self.context['request'].user.is_staff:
+            # Regular users cannot update these fields
+            for field in ['role', 'subscription_type', 'has_contributed']:
+                if field in user_data:
+                    raise serializers.ValidationError({field: "This field cannot be updated by non-admin users."})
+        return data

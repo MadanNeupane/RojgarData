@@ -13,7 +13,7 @@ def create_profile(sender, instance, created, **kwargs):
 # Create an employee profile when a user with role 'employee' is created
 def create_employee_profile(sender, instance, created, **kwargs):
     if created and instance.role == 'employee':
-        EmployeeProfile.objects.create(user=instance)
+        EmployeeProfile.objects.create(profile=instance.profile)
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):
@@ -21,4 +21,4 @@ def save_profile(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_employee_profile(sender, instance, **kwargs):
-    instance.employee_profile.save()
+    instance.profile.save()

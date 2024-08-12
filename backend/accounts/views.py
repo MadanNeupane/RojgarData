@@ -5,9 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.mixins import CreateModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.exceptions import PermissionDenied, NotFound
-from .models import Profile
+from .models import Profile, VerificationRequest
 from .serializers import ProfileSerializer
-
 
 class ProfileViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
     serializer_class = ProfileSerializer
@@ -57,3 +56,35 @@ class ProfileViewSet(CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, Gen
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+    @action(detail=True, methods=['post'], url_path='submit-verification')
+    def submit_verification(self, request, pk=None):
+        """
+        Allow authenticated users to submit a verification request if not verified.
+        """
+        profile = self.get_object()
+        if profile.is_verified:
+            return Response({"detail": _("Your profile is already verified.")}, status=400)
+
+        if VerificationRequest.objects.filter(profile=profile).exists():
+            return Response({"detail": _("A verification request is already pending.")}, status=400)
+
+        VerificationRequest.objects.create(profile=profile)
+        return Response({"detail": _("Verification request submitted successfully.")})
+
+    @action(detail=True, methods=['post'], url_path='approve-verification', permission_classes=[IsAdminUser])
+    def approve_verification(self, request, pk=None):
+        """
+        Allow admins to approve verification requests.
+        """
+        profile = self.get_object()
+        try:
+            verification_request = profile.verification_request
+        except VerificationRequest.DoesNotExist:
+            return Response({"detail": _("No verification request found.")}, status=404)
+
+        if verification_request.approved:
+            return Response({"detail": _("This request is already approved.")}, status=400)
+
+        verification_request.approve()
+        return Response({"detail": _("Verification request approved successfully.")})

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
@@ -76,3 +77,35 @@ class SocialLink(models.Model):
                         _(f"URL for {platform} must contain '{expected_pattern}'"),
                         code='invalid_url',
                     )
+
+class VerificationRequest(models.Model):
+    profile = models.OneToOneField(
+        'Profile',
+        on_delete=models.CASCADE,
+        related_name='verification_request'
+    )
+    approved = models.BooleanField(default=False)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Verification Request")
+        verbose_name_plural = _("Verification Requests")
+
+    def __str__(self):
+        return f"Verification request for {self.profile.user.username}"
+
+    def approve(self):
+        """ Approve the verification request and update the profile. """
+        if not self.approved:
+            self.approved = True
+            self.reviewed_at = datetime.now()
+            self.profile.is_verified = True
+            self.profile.save()
+            self.save()
+
+    def clean(self):
+        """ Ensure that only unverified profiles can submit verification requests. """
+        super().clean()
+        if self.profile.is_verified:
+            raise ValidationError(_("This profile is already verified."))
