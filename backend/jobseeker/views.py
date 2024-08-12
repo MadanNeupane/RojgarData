@@ -1,17 +1,25 @@
 from django.utils.translation import gettext as _
-from rest_framework import viewsets
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import JobseekerProfile
 from .serializers import JobseekerProfileSerializer
 from .permissions import ProfileVisibilityPermission
+from .filters import JobseekerProfileFilter
 
 
-class JobseekerProfileViewSet(viewsets.ModelViewSet):
+class JobseekerProfileViewSet(ModelViewSet):
     queryset = JobseekerProfile.objects.all()
     serializer_class = JobseekerProfileSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = JobseekerProfileFilter
+    search_fields = ['job_title', 'skills__name', 'languages__name', 'preferred_jobs']
+    ordering_fields = ['job_title', 'profile_visibility']
+    ordering = ['job_title']  # Default ordering
 
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:

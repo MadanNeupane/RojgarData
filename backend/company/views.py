@@ -5,6 +5,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_nested.viewsets import NestedViewSetMixin
 from rest_framework import status
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import CompanyFilter
+
 
 from .models import (
     Company,
@@ -35,6 +39,12 @@ class CompanyViewSet(ModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     permission_classes = [IsCompanyAdminOrReadOnly]
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = CompanyFilter
+    ordering_fields = ['name', 'view_count', 'company_size']
+    search_fields = ['name', 'industry', 'company_size', 'location']
+
 
     def retrieve(self, request, *args, **kwargs):
         company = self.get_object()
