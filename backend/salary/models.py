@@ -28,6 +28,10 @@ class SalarySubmission(models.Model):
     def __str__(self):
         return _(f"Salary submission for {self.job_title} at {self.company.name} by {self.submitted_by.user.username}")
 
+    @property
+    def total_reports(self):
+        return self.reports.count()
+
 
 class SalaryReport(models.Model):
     salary_submission = models.ForeignKey(SalarySubmission, related_name='reports', on_delete=models.CASCADE)
