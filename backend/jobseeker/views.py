@@ -2,7 +2,7 @@ from django.utils.translation import gettext as _
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import PermissionDenied, NotFound
 from .models import JobseekerProfile
 from .serializers import JobseekerProfileSerializer
@@ -12,7 +12,12 @@ from .permissions import ProfileVisibilityPermission
 class JobseekerProfileViewSet(viewsets.ModelViewSet):
     queryset = JobseekerProfile.objects.all()
     serializer_class = JobseekerProfileSerializer
-    permission_classes = [ProfileVisibilityPermission]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            # Allow unauthenticated users to view profiles with public visibility
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -42,23 +47,16 @@ class JobseekerProfileViewSet(viewsets.ModelViewSet):
             raise PermissionDenied(_('You can only update your own profile.'))
         serializer.save()
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def me(self, request):
         """
         Get the profile of the currently authenticated user.
-        If the profile does not exist for an jobseeker user, create it.
         """
         user = request.user
 
         # Check if the user has the role 'jobseeker'
         if user.role == 'jobseeker':
-            profile, created = JobseekerProfile.objects.get_or_create(profile__user=user)
-
-            # If the profile was created, populate default values if needed
-            if created:
-                # You can set default values here if necessary
-                profile.save()
-
+            profile = JobseekerProfile.objects.get(profile__user=user)
             serializer = self.get_serializer(profile)
             return Response(serializer.data)
         else:

@@ -1,3 +1,5 @@
+# serializers.py
+
 from rest_framework import serializers
 from .models import JobseekerProfile, Skill, Language, Experience, Education, Training
 
@@ -27,11 +29,11 @@ class TrainingSerializer(serializers.ModelSerializer):
         fields = ['id', 'institution', 'title', 'start_date', 'end_date', 'description', 'current']
 
 class JobseekerProfileSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True, read_only=True)
-    languages = LanguageSerializer(many=True, read_only=True)
-    experiences = ExperienceSerializer(many=True, read_only=True)
-    educations = EducationSerializer(many=True, read_only=True)
-    trainings = TrainingSerializer(many=True, read_only=True)
+    skills = SkillSerializer(many=True, required=False)
+    languages = LanguageSerializer(many=True, required=False)
+    experiences = ExperienceSerializer(many=True, required=False, source='profile.experiences')
+    educations = EducationSerializer(many=True, required=False, source='profile.educations')
+    trainings = TrainingSerializer(many=True, required=False, source='profile.trainings')
 
     class Meta:
         model = JobseekerProfile
@@ -58,3 +60,52 @@ class JobseekerProfileSerializer(serializers.ModelSerializer):
             representation.pop('resume', None)
 
         return representation
+
+    def update(self, instance, validated_data):
+        skills_data = validated_data.pop('skills', [])
+        languages_data = validated_data.pop('languages', [])
+        experiences_data = validated_data.pop('profile', {}).get('experiences', [])
+        educations_data = validated_data.pop('profile', {}).get('educations', [])
+        trainings_data = validated_data.pop('profile', {}).get('trainings', [])
+
+        # Update or create skills
+        for skill_data in skills_data:
+            skill, created = Skill.objects.update_or_create(
+                profile=instance,
+                name=skill_data['name']
+            )
+
+        # Update or create languages
+        for language_data in languages_data:
+            language, created = Language.objects.update_or_create(
+                profile=instance,
+                name=language_data['name']
+            )
+
+        # Update or create experiences
+        for experience_data in experiences_data:
+            experience, created = Experience.objects.update_or_create(
+                profile=instance.profile,
+                company_name=experience_data['company_name'],
+                defaults=experience_data
+            )
+
+        # Update or create educations
+        for education_data in educations_data:
+            education, created = Education.objects.update_or_create(
+                profile=instance.profile,
+                institution=education_data['institution'],
+                degree=education_data['degree'],
+                defaults=education_data
+            )
+
+        # Update or create trainings
+        for training_data in trainings_data:
+            training, created = Training.objects.update_or_create(
+                profile=instance.profile,
+                institution=training_data['institution'],
+                title=training_data['title'],
+                defaults=training_data
+            )
+
+        return super().update(instance, validated_data)
