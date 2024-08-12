@@ -2,18 +2,26 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from accounts.models import Profile
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, BlogPostBookmark
 from .serializers import (
     BlogPostSerializer, TagSerializer, GuestArticleSubmissionSerializer,
     ReactionSerializer, BlogPostBookmarkSerializer
 )
 from .permissions import IsAuthorOrAdmin, IsAuthenticatedOrCanSubmit
+from .filters import BlogPostFilter, GuestArticleSubmissionFilter
 
 class BlogPostViewSet(viewsets.ModelViewSet):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrAdmin]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = BlogPostFilter
+    search_fields = ['title', 'content', 'author__username', 'author_name']
+    ordering_fields = ['created_at', 'view_count']
+    ordering = ['-created_at']
+
 
     def retrieve(self, request, *args, **kwargs):
         blog_post = self.get_object()
@@ -95,6 +103,8 @@ class GuestArticleSubmissionViewSet(viewsets.ModelViewSet):
     queryset = GuestArticleSubmission.objects.all()
     serializer_class = GuestArticleSubmissionSerializer
     permission_classes = [IsAuthenticatedOrCanSubmit]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GuestArticleSubmissionFilter
 
     def perform_create(self, serializer):
         # Save the guest article submission with or without an author.
