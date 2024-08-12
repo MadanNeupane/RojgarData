@@ -1,8 +1,10 @@
 import django_filters
+from company.models import Company
 from .models import SalarySubmission, SalaryReport
 
 class SalarySubmissionFilter(django_filters.FilterSet):
-    company = django_filters.CharFilter(field_name='company__name', lookup_expr='icontains')
+    # company = django_filters.ModelChoiceFilter(queryset=SalarySubmission.objects.values_list('company', flat=True).distinct())
+    company = django_filters.ModelChoiceFilter(queryset=Company.objects.all())
     job_title = django_filters.CharFilter(field_name='job_title', lookup_expr='icontains')
     salary_min = django_filters.NumberFilter(field_name='salary_amount', lookup_expr='gte')
     salary_max = django_filters.NumberFilter(field_name='salary_amount', lookup_expr='lte')

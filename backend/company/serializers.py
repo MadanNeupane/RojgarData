@@ -22,7 +22,7 @@ class ReviewAspectScoreSerializer(serializers.ModelSerializer):
         fields = ['aspect', 'score']
 
 class CompanyReviewSerializer(serializers.ModelSerializer):
-    aspect_scores = ReviewAspectScoreSerializer(many=True)
+    aspect_scores = ReviewAspectScoreSerializer(many=True, required=False)
 
     class Meta:
         model = CompanyReview
@@ -41,8 +41,9 @@ class CompanyReviewSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
+        user = self.context['request'].user
         aspect_scores_data = validated_data.pop('aspect_scores', [])
-        review = CompanyReview.objects.create(**validated_data)
+        review = CompanyReview.objects.create(user=user.profile, **validated_data)
         for aspect_score_data in aspect_scores_data:
             ReviewAspectScore.objects.create(review=review, **aspect_score_data)
         return review

@@ -2,12 +2,12 @@ from django.utils.translation import gettext as _
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_nested.viewsets import NestedViewSetMixin
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import CompanyFilter
+from .filters import CompanyFilter, CompanyReviewFilter, CompanyQuestionFilter
 
 
 from .models import (
@@ -76,7 +76,21 @@ class CompanyViewSet(ModelViewSet):
 class CompanyReviewViewSet(ModelViewSet):
     queryset = CompanyReview.objects.all()
     serializer_class = CompanyReviewSerializer
-    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = CompanyReviewFilter
+    ordering_fields = ['created_at', 'rating']
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsCompanyAdminOrReadOnly]
+        elif self.action in ['list', 'retrieve']:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
     @action(detail=True, methods=['post'], permission_classes=[CanReportSpam])
     def report_spam(self, request, pk=None):
@@ -120,7 +134,19 @@ class CompanyAnswerViewSet(ModelViewSet):
 class CompanyQuestionViewSet(ModelViewSet):
     queryset = CompanyQuestion.objects.all()
     serializer_class = CompanyQuestionSerializer
-    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
+    filterset_class = CompanyQuestionFilter
+    ordering_fields = ['upvotes', 'downvotes', 'created_at']
+    ordering = ['-upvotes']
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsCompanyAdminOrReadOnly]
+        elif self.action in ['list', 'retrieve']:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def answer(self, request, pk=None):
