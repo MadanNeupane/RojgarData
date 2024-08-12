@@ -5,6 +5,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import JobPostFilter, JobApplicationFilter
 from .models import JobPost, JobApplication, JobBookmark
 from .serializers import JobPostSerializer, JobApplicationSerializer, JobBookmarkSerializer
 from .permissions import IsAdminOrCompanyAdmin, IsJobseeker
@@ -13,6 +16,11 @@ from .permissions import IsAdminOrCompanyAdmin, IsJobseeker
 class JobPostViewSet(ModelViewSet):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_class = JobPostFilter
+    search_fields = ['title', 'description', 'location']
+    ordering_fields = ['created_at', 'deadline', 'view_count']
+    ordering = ['-created_at']  # Default ordering
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -66,6 +74,8 @@ class JobPostViewSet(ModelViewSet):
 
 class JobApplicationViewSet(ModelViewSet):
     serializer_class = JobApplicationSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = JobApplicationFilter
 
     def get_queryset(self):
         user = self.request.user
