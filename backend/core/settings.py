@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'job',
     'salary',
     'blog',
+    'gamification',
 ]
 
 MIDDLEWARE = [
