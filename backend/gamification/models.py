@@ -1,5 +1,7 @@
 from django.db import models
 from accounts.models import Profile
+from . import choices
+
 
 class Achievement(models.Model):
     name = models.CharField(max_length=100)
@@ -20,7 +22,7 @@ class Badge(models.Model):
 
 class ScoreLog(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='score_logs')
-    action = models.CharField(max_length=100)
+    action = models.CharField(max_length=100, choices=choices.ACTION_CHOICES)
     points = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 

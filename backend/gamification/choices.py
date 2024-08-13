@@ -1,0 +1,26 @@
+# Choices for the Gamification module
+
+ACTION_CHOICES = [
+    ('account_registration', 'Account Registration'),
+    ('email_verification', 'Email Verification'),
+    ('profile_completion', 'Profile Completion'),
+    ('follow_company', 'Follow Company'),
+    ('review_company', 'Review Company'),
+    ('suggest_company_update', 'Suggest Company Update'),
+    ('company_update_approved', 'Company Update Approved'),
+    ('ask_question', 'Ask Question'),
+    ('answer_question', 'Answer Question'),
+    ('upvote_received', 'Upvote Received'),
+    ('post_job', 'Post Job'),
+    ('apply_for_job', 'Apply for Job'),
+    ('bookmark_job', 'Bookmark Job'),
+    ('submit_salary', 'Submit Salary'),
+    ('salary_verified', 'Salary Verified'),
+    ('report_salary', 'Report Salary'),
+    ('create_blogpost', 'Create Blogpost'),
+    ('react_blogpost', 'React Blogpost'),
+    ('submit_guest_article', 'Submit Guest Article'),
+    ('guest_article_approved', 'Guest Article Approved'),
+    ('reaction_received', 'Reaction Received'),
+    ('donate_money', 'Donate Money'),
+]
