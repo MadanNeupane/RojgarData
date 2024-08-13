@@ -1,10 +1,10 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
-from .models import Achievement, Badge, ScoreLog, ProfileAchievement, ProfileBadge
+from .models import Achievement, ScoreLog, ProfileAchievement
 from .serializers import (
-    AchievementSerializer, BadgeSerializer, ScoreLogSerializer,
-    ProfileAchievementSerializer, ProfileBadgeSerializer
+    AchievementSerializer, ScoreLogSerializer,
+    ProfileAchievementSerializer
 )
 
 
@@ -16,10 +16,6 @@ class AchievementViewSet(ModelViewSet):
     search_fields = ['name', 'description']
     ordering_fields = ['points_required']
 
-class BadgeViewSet(ReadOnlyModelViewSet):
-    queryset = Badge.objects.all()
-    serializer_class = BadgeSerializer
-    permission_classes = [IsAuthenticated]
 
 class ScoreLogViewSet(ReadOnlyModelViewSet):
     serializer_class = ScoreLogSerializer
@@ -34,11 +30,3 @@ class ProfileAchievementViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return ProfileAchievement.objects.filter(profile=self.request.user.profile)
-
-class ProfileBadgeViewSet(ReadOnlyModelViewSet):
-    serializer_class = ProfileBadgeSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return ProfileBadge.objects.filter(profile=self.request.user.profile)
-

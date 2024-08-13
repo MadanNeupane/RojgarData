@@ -25,12 +25,32 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Notification preferences
+    notify_job_alerts = models.BooleanField(default=True, verbose_name=_("Job Alerts Notification"), help_text=_("Notify when a new job is posted by the companies you follow"))
+    notify_replies = models.BooleanField(default=True, help_text=_("Notify when someone replies to your questions"))
+    notify_job_application_updates = models.BooleanField(default=True, verbose_name=_("Job Application Updates"), help_text=_("Notify when a job application is updated"))
+    notify_system_updates = models.BooleanField(default=True, verbose_name=_("System Updates"), help_text=_("Notify when there are system updates"))
+    notify_push = models.BooleanField(default=True, verbose_name=_("Push Notifications"), help_text=_("Notify when there are new notifications via push notifications"))
+    notify_email = models.BooleanField(default=True, verbose_name=_("Email Notifications"), help_text=_("Notify when there are new notifications via email"))
+
     def add_reputation(self, amount):
         self.reputation_points += amount
         self.save()
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+    def add_reputation(self, amount):
+        self.reputation_points += amount
+        self.save()
+
+
+    def get_achievements(self):
+        return self.achievements.all()
+
+    def toggle_notification_preference(self, preference, value):
+        setattr(self, preference, value)
+        self.save()
 
 
 class SocialLink(models.Model):

@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Achievement, Badge, ScoreLog, ProfileAchievement, ProfileBadge
+from .models import Achievement, ScoreLog, ProfileAchievement
 from accounts.models import Profile
 
 
@@ -8,10 +8,6 @@ class AchievementSerializer(ModelSerializer):
         model = Achievement
         fields = ['id', 'name', 'description', 'points_required', 'reward']
 
-class BadgeSerializer(ModelSerializer):
-    class Meta:
-        model = Badge
-        fields = ['id', 'name', 'description', 'icon']
 
 class ScoreLogSerializer(ModelSerializer):
     class Meta:
@@ -24,10 +20,3 @@ class ProfileAchievementSerializer(ModelSerializer):
     class Meta:
         model = ProfileAchievement
         fields = ['id', 'profile', 'achievement', 'achieved_at']
-
-class ProfileBadgeSerializer(ModelSerializer):
-    badge = BadgeSerializer()
-
-    class Meta:
-        model = ProfileBadge
-        fields = ['id', 'profile', 'badge', 'awarded_at']
