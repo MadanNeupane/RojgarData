@@ -3,7 +3,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_nested.viewsets import NestedViewSetMixin
 from rest_framework import status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -65,7 +64,7 @@ class CompanyViewSet(ModelViewSet):
     def follow(self, request, pk=None):
         company = self.get_object()
         company.followers.add(request.user.profile)
-        return Response({'detail': 'Company followed.'})
+        return Response({'detail': _('Company followed successfully.')}, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def followed(self, request):
@@ -108,28 +107,32 @@ class CompanyAnswerViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def upvote(self, request, pk=None):
+    def upvote(self, request, pk=None, company_pk=None, question_pk=None):
         answer = self.get_object()
         profile = request.user.profile
         if profile in answer.upvotes.all():
             answer.upvotes.remove(profile)
-            return Response({'detail': 'Upvote removed.'}, status=status.HTTP_200_OK)
+            message = _('Upvote removed.')
         else:
             answer.upvotes.add(profile)
-            answer.downvotes.remove(profile)  # Remove downvote if present
-            return Response({'detail': 'Upvoted successfully.'}, status=status.HTTP_200_OK)
+            answer.downvotes.remove(profile)  # Ensure a user can't both upvote and downvote
+            message = _('Upvoted successfully.')
+        answer.save()
+        return Response({'detail': message, 'upvote_count': answer.upvote_count, 'downvote_count': answer.downvote_count}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def downvote(self, request, pk=None):
+    def downvote(self, request, pk=None, company_pk=None, question_pk=None):
         answer = self.get_object()
         profile = request.user.profile
         if profile in answer.downvotes.all():
             answer.downvotes.remove(profile)
-            return Response({'detail': 'Downvote removed.'}, status=status.HTTP_200_OK)
+            message = _('Downvote removed.')
         else:
             answer.downvotes.add(profile)
-            answer.upvotes.remove(profile)  # Remove upvote if present
-            return Response({'detail': 'Downvoted successfully.'}, status=status.HTTP_200_OK)
+            answer.upvotes.remove(profile)  # Ensure a user can't both downvote and upvote
+            message = _('Downvoted successfully.')
+        answer.save()
+        return Response({'detail': message, 'upvote_count': answer.upvote_count, 'downvote_count': answer.downvote_count}, status=status.HTTP_200_OK)
 
 
 class CompanyQuestionViewSet(ModelViewSet):
@@ -137,7 +140,7 @@ class CompanyQuestionViewSet(ModelViewSet):
     serializer_class = CompanyQuestionSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_class = CompanyQuestionFilter
-    ordering_fields = ['upvotes', 'downvotes', 'created_at']
+    ordering_fields = ['upvote_count', 'downvote_count', 'created_at']
     ordering = ['-upvotes']
 
     def get_permissions(self):
@@ -150,7 +153,7 @@ class CompanyQuestionViewSet(ModelViewSet):
         return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def answer(self, request, pk=None):
+    def answer(self, request, pk=None, company_pk=None):
         question = self.get_object()
         serializer = CompanyAnswerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -158,25 +161,29 @@ class CompanyQuestionViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def upvote(self, request, pk=None):
+    def upvote(self, request, pk=None, company_pk=None):
         question = self.get_object()
         profile = request.user.profile
         if profile in question.upvotes.all():
             question.upvotes.remove(profile)
-            return Response({'detail': 'Upvote removed.'}, status=status.HTTP_200_OK)
+            message = _('Upvote removed.')
         else:
             question.upvotes.add(profile)
-            question.downvotes.remove(profile)  # Remove downvote if present
-            return Response({'detail': 'Upvoted successfully.'}, status=status.HTTP_200_OK)
+            question.downvotes.remove(profile)  # Ensure a user can't both upvote and downvote
+            message = _('Upvoted successfully.')
+        question.save()
+        return Response({'detail': message, 'upvote_count': question.upvote_count, 'downvote_count': question.downvote_count}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def downvote(self, request, pk=None):
+    def downvote(self, request, pk=None, company_pk=None):
         question = self.get_object()
         profile = request.user.profile
         if profile in question.downvotes.all():
             question.downvotes.remove(profile)
-            return Response({'detail': 'Downvote removed.'}, status=status.HTTP_200_OK)
+            message = _('Downvote removed.')
         else:
             question.downvotes.add(profile)
-            question.upvotes.remove(profile)  # Remove upvote if present
-            return Response({'detail': 'Downvoted successfully.'}, status=status.HTTP_200_OK)
+            question.upvotes.remove(profile)  # Ensure a user can't both downvote and upvote
+            message = _('Downvoted successfully.')
+        question.save()
+        return Response({'detail': message, 'upvote_count': question.upvote_count, 'downvote_count': question.downvote_count}, status=status.HTTP_200_OK)
