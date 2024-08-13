@@ -43,8 +43,8 @@ class CompanyViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_class = CompanyFilter
     ordering_fields = ['name', 'view_count', 'company_size']
+    ordering = ['name']
     search_fields = ['name', 'industry', 'company_size', 'location']
-
 
     def retrieve(self, request, *args, **kwargs):
         company = self.get_object()
@@ -79,6 +79,7 @@ class CompanyReviewViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_class = CompanyReviewFilter
     ordering_fields = ['created_at', 'rating']
+    ordering = ['-created_at']
 
     def get_permissions(self):
         if self.action in ['update', 'partial_update', 'destroy']:
