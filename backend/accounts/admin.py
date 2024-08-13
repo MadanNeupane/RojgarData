@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Profile, SocialLink, VerificationRequest
+from .models import User, Profile, SocialLink, VerificationRequest, Notification
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -18,4 +18,5 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(SocialLink, SocialLinkAdmin)
 admin.site.register(VerificationRequest)
+admin.site.register(Notification)
 

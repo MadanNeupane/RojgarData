@@ -23,4 +23,5 @@ ACTION_CHOICES = [
     ('guest_article_approved', 'Guest Article Approved'),
     ('reaction_received', 'Reaction Received'),
     ('donate_money', 'Donate Money'),
+    ('total_score', 'Total Score'),
 ]
