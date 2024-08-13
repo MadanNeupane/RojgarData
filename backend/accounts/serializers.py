@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from djoser.serializers import UserSerializer as BaseUserSerializer, UserCreateSerializer as BaseUserCreateSerializer
+from gamification.serializers import ProfileAchievementSerializer
 from .models import Profile, SocialLink, User, VerificationRequest
 
 class UserSerializer(BaseUserSerializer):
@@ -62,14 +63,17 @@ class SocialLinkSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, required=False)
+    username = serializers.CharField(source='user.username')
+    full_name = serializers.CharField(source='user.get_full_name')
+    achievements = ProfileAchievementSerializer(many=True)
 
     class Meta:
         model = Profile
         fields = [
-            'id', 'user', 'profile_picture', 'birth_date', 'phone_number', 'address', 'bio',
-            'reputation_points', 'social_links', 'is_verified', 'created_at', 'updated_at'
+            'id', 'user', 'username', 'full_name', 'profile_picture', 'birth_date', 'phone_number', 'address', 'bio',
+            'reputation_points', 'achievements', 'social_links', 'is_verified', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['user', 'reputation_points', 'is_verified', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'username', 'full_name', 'reputation_points', 'achievements', 'is_verified', 'created_at', 'updated_at']
 
     def update(self, instance, validated_data):
         social_links_data = validated_data.pop('social_links', [])

@@ -30,7 +30,7 @@ ACTION_POINTS = {
     'guest_article_approved': 30,
     'reaction_received': 1,
     'donate_money': None,  # Handled separately
-    'total_score': None,  # Handled separately
+    # 'total_score': None,  # Handled separately
 }
 
 

@@ -12,6 +12,12 @@ class User(AbstractUser):
     subscription_type = models.CharField(max_length=10, choices=choices.ACCOUNT_SUBSCRIPTION_TYPE_CHOICES, default='free')
     has_contributed = models.BooleanField(default=False, help_text="Flag to indicate if the user has made a donation")
 
+    def __str__(self):
+        return self.username
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}' if self.first_name and self.last_name else ''
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -32,10 +38,6 @@ class Profile(models.Model):
     notify_system_updates = models.BooleanField(default=True, verbose_name=_("System Updates"), help_text=_("Notify when there are system updates"))
     notify_push = models.BooleanField(default=True, verbose_name=_("Push Notifications"), help_text=_("Notify when there are new notifications via push notifications"))
     notify_email = models.BooleanField(default=True, verbose_name=_("Email Notifications"), help_text=_("Notify when there are new notifications via email"))
-
-    def add_reputation(self, amount):
-        self.reputation_points += amount
-        self.save()
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
