@@ -20,4 +20,4 @@ class Contact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name} - {self.topic}"
+        return f"{self.name} ({self.get_topic_display()})"
