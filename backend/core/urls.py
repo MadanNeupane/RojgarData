@@ -20,6 +20,7 @@ urlpatterns = [
     path('job/', include('job.urls')),
     path('blog/', include('blog.urls')),
     path('gamification/', include('gamification.urls')),
+    # path('advertisement/', include('advertisement.urls')),
 ]
 
 if settings.DEBUG:

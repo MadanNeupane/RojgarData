@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'salary',
     'blog',
     'gamification',
+    'advertisement',
     'pages',
 ]
 
