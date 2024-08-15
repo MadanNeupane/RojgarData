@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, BlogPostBookmark
+from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, Comment, BlogPostBookmark
 from accounts.models import Profile
 
 class TagSerializer(serializers.ModelSerializer):
@@ -7,16 +7,37 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ['id', 'name']
 
+class CommentSerializer(serializers.ModelSerializer):
+    replies = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'blog_post', 'author', 'content', 'created_at', 'updated_at', 'replies', 'parent']
+        read_only_fields = ['blog_post', 'author', 'created_at', 'updated_at', 'replies', 'parent']
+
+    def get_replies(self, obj):
+        if obj.is_reply():
+            return None  # No replies for a reply
+        # Get replies for the comment
+        replies = obj.replies.all()
+        return CommentSerializer(replies, many=True).data
+
+    def create(self, validated_data):
+        request = self.context['request']
+        validated_data['author'] = request.user
+        return super().create(validated_data)
+
 class BlogPostSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
     author_name = serializers.SerializerMethodField()
     total_claps = serializers.IntegerField(read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
     total_bookmarks = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = BlogPost
-        fields = ['id', 'author', 'author_name', 'title', 'content', 'category', 'tags', 'associated_company', 'view_count', 'total_claps', 'total_bookmarks', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'author', 'view_count', 'total_claps', 'total_bookmarks', 'created_at', 'updated_at']
+        fields = ['id', 'author', 'author_name', 'title', 'content', 'category', 'tags', 'associated_company', 'view_count', 'total_claps', 'comments', 'total_bookmarks', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'author', 'view_count', 'total_claps', 'comments', 'total_bookmarks', 'created_at', 'updated_at']
 
     def get_author_name(self, obj):
         return obj.author.username if obj.author else obj.author_name

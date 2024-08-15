@@ -112,3 +112,25 @@ class Reaction(models.Model):
         if self.claps > 10:
             self.claps = 10
         super().save(*args, **kwargs)
+
+
+class Comment(models.Model):
+    """
+    Stores comments on blog posts with the ability to reply to other comments.
+    """
+
+    blog_post = models.ForeignKey(BlogPost, related_name='comments', on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='comments', on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', related_name='replies', null=True, blank=True, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return _(f"Comment by {self.author.username} on {self.blog_post.title}")
+
+    def is_reply(self):
+        return self.parent is not None
+
+    class Meta:
+        ordering = ['created_at']

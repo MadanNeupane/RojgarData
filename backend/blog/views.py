@@ -1,13 +1,13 @@
 from rest_framework import viewsets, status
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, BlogPostBookmark
+from .models import BlogPost, Tag, GuestArticleSubmission, Reaction, Comment, BlogPostBookmark
 from .serializers import (
     BlogPostSerializer, TagSerializer, GuestArticleSubmissionSerializer,
-    ReactionSerializer, BlogPostBookmarkSerializer
+    ReactionSerializer, CommentSerializer, BlogPostBookmarkSerializer
 )
 from .permissions import IsAuthorOrAdmin, IsAuthenticatedOrCanSubmit
 from .filters import BlogPostFilter, GuestArticleSubmissionFilter
@@ -22,11 +22,9 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     ordering_fields = ['created_at', 'view_count']
     ordering = ['-created_at']
 
-
     def retrieve(self, request, *args, **kwargs):
         blog_post = self.get_object()
-
-        # Increment the visit count
+        # Increment the view count
         blog_post.view_count += 1
         blog_post.save(update_fields=['view_count'])
 
@@ -36,63 +34,46 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def bookmark(self, request, pk=None):
+    @action(detail=True, methods=['get'], permission_classes=[AllowAny], url_path='comments')
+    def list_comments(self, request, pk=None):
         blog_post = self.get_object()
-        user = request.user
-        bookmark, created = BlogPostBookmark.objects.get_or_create(user=user, blog_post=blog_post)
-        if not created:
-            return Response({'status': 'already bookmarked'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'status': 'bookmarked'})
-
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def remove_bookmark(self, request, pk=None):
-        blog_post = self.get_object()
-        user = request.user
-        try:
-            bookmark = BlogPostBookmark.objects.get(user=user, blog_post=blog_post)
-            bookmark.delete()
-            return Response({'status': 'bookmark removed'})
-        except BlogPostBookmark.DoesNotExist:
-            return Response({'status': 'bookmark not found'}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
-    def my_bookmarks(self, request):
-        user = request.user
-        bookmarks = BlogPostBookmark.objects.filter(user=user)
-        serializer = BlogPostBookmarkSerializer(bookmarks, many=True)
+        comments = blog_post.comments.filter(parent=None)  # Fetch only top-level comments
+        serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def react(self, request, pk=None):
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated], url_path='comments')
+    def create_comment(self, request, pk=None):
         blog_post = self.get_object()
-        user = request.user
+        serializer = CommentSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=request.user, blog_post=blog_post)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        claps = request.data.get('claps', 1)  # Default to 1 if not specified
-        if not 1 <= claps <= 10:
-            return Response({'detail': 'Claps must be between 1 and 10.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        reaction, created = Reaction.objects.get_or_create(user=user, blog_post=blog_post)
-        if not created:
-            return Response({'status': 'already reacted'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Set the number of claps
-        reaction.claps = claps
-        reaction.save()
-
-        return Response({'status': 'reacted', 'claps': reaction.claps})
-
-    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
-    def remove_reaction(self, request, pk=None):
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated], url_path='comments/(?P<comment_pk>[^/.]+)/reply')
+    def reply_to_comment(self, request, pk=None, comment_pk=None):
         blog_post = self.get_object()
-        user = request.user
-        try:
-            reaction = Reaction.objects.get(user=user, blog_post=blog_post)
-            reaction.delete()
-            return Response({'status': 'reaction removed'})
-        except Reaction.DoesNotExist:
-            return Response({'status': 'reaction not found'}, status=status.HTTP_400_BAD_REQUEST)
+        parent_comment = Comment.objects.get(pk=comment_pk, blog_post=blog_post)
+        serializer = CommentSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=request.user, parent=parent_comment, blog_post=blog_post)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['patch', 'delete'], permission_classes=[IsAuthenticated, IsAuthorOrAdmin], url_path='comments/(?P<comment_pk>[^/.]+)')
+    def update_or_delete_comment(self, request, pk=None, comment_pk=None):
+        blog_post = self.get_object()
+        comment = Comment.objects.get(pk=comment_pk, blog_post=blog_post)
+
+        if request.method == 'PATCH':
+            # Update comment
+            serializer = CommentSerializer(comment, data=request.data, partial=True, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        if request.method == 'DELETE':
+            # Delete comment
+            comment.delete()
+            return Response({'status': 'comment deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
