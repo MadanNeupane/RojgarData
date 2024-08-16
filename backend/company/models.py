@@ -87,8 +87,15 @@ class SocialLink(models.Model):
 class CompanyReview(models.Model):
     company = models.ForeignKey(Company, related_name='reviews', on_delete=models.CASCADE)
     user = models.ForeignKey(Profile, related_name='company_reviews', on_delete=models.CASCADE)
+    work_status = models.CharField(max_length=10, choices=choices.WORK_STATUS_CHOICES)
+    work_type = models.CharField(max_length=10, choices=choices.WORK_TYPE_CHOICES)
     rating = models.PositiveIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    review_headline = models.CharField(max_length=255)
     review_text = models.TextField()
+    pros = models.TextField(blank=True, null=True)
+    cons = models.TextField(blank=True, null=True)
+    advice_for_management = models.TextField(blank=True, null=True)
+    recommended = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

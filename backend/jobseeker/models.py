@@ -2,7 +2,6 @@ from django.db import models
 from accounts.models import Profile
 
 class JobseekerProfile(models.Model):
-
     PUBLIC = 'public'
     EMPLOYER = 'employer'
     AUTHENTICATED = 'authenticated'
@@ -13,6 +12,12 @@ class JobseekerProfile(models.Model):
         (EMPLOYER, 'Employer'),
         (AUTHENTICATED, 'Authenticated Users'),
         (PRIVATE, 'Private')
+    ]
+    EMPLOYMENT_STATUS = [
+        ('employed', 'Employed'),
+        ('unemployed', 'Unemployed'),
+        ('self_employed', 'Self Employed'),
+        ('student', 'Student'),
     ]
 
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
@@ -26,6 +31,8 @@ class JobseekerProfile(models.Model):
     )
     job_title = models.CharField(max_length=255, blank=True)
     preferred_jobs = models.JSONField(blank=True, null=True)  # Assuming preferred jobs are stored as a list of job titles
+    employment_status = models.CharField(max_length=20, choices=EMPLOYMENT_STATUS, default='unemployed')
+    prefereed_locations = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.profile.user.username}'s Profile"

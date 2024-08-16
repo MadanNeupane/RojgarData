@@ -15,7 +15,7 @@ class AdCampaign(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
     budget = models.DecimalField(max_digits=10, decimal_places=2)
     target_url = models.URLField()
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -70,3 +70,7 @@ class AdPerformanceSummary(models.Model):
 
     def __str__(self):
         return _(f"Performance summary for {self.creative.title}")
+
+    class Meta:
+        verbose_name = 'Ad Performance Summary'
+        verbose_name_plural = 'Ad Performance Summaries'

@@ -2,26 +2,23 @@ from django.db import models
 from django.utils.translation import gettext as _
 from company.models import Company
 from accounts.models import Profile
+from . import choices
 
 
 class SalarySubmission(models.Model):
-    SENIORITY_LEVELS = [
-        ('intern', 'Intern'),
-        ('junior', 'Junior'),
-        ('mid', 'Mid'),
-        ('senior', 'Senior'),
-        ('lead', 'Lead'),
-    ]
-
     company = models.ForeignKey(Company, related_name='salary_submissions', on_delete=models.SET_NULL, null=True)
     submitted_by = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     anonymous = models.BooleanField(default=True)
     job_title = models.CharField(max_length=255)
     salary_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=3, choices=[('NPR', 'NPR'), ('USD', 'USD'), ('EUR', 'EUR')])
-    payment_period = models.CharField(max_length=10, choices=[('month', 'Month'), ('week', 'Week'), ('hour', 'Hour'), ('year', 'Year')])
+    currency = models.CharField(max_length=3, choices=choices.CURRENCY_CHOICES)
+    payment_period = models.CharField(max_length=10, choices=choices.PAYMENT_PERIOD_CHOICES)
+    bonus = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    bonus_payment_period = models.CharField(max_length=10, choices=choices.PAYMENT_PERIOD_CHOICES, null=True, blank=True)
     years_of_experience = models.PositiveIntegerField(default=0)
-    seniority = models.CharField(max_length=10, choices=SENIORITY_LEVELS, default='junior')
+    seniority = models.CharField(max_length=10, choices=choices.SENIORITY_LEVELS, default='junior')
+    work_status = models.CharField(max_length=10, choices=choices.WORK_STATUS_CHOICES, default='current')
+    work_type = models.CharField(max_length=10, choices=choices.WORK_TYPE_CHOICES, default='full_time')
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -83,3 +83,16 @@ COMPANY_FIELD_NAME_CHOICES = [
     ('location', _('Location')),
     ('work_emails', _('Work Emails')),
 ]
+
+WORK_STATUS_CHOICES = [
+    ('current', _('Current')),
+    ('former', _('Former')),
+]
+
+WORK_TYPE_CHOICES = [
+    ('full_time', _('Full Time')),
+    ('part_time', _('Part Time')),
+    ('contract', _('Contract')),
+    ('internship', _('Internship')),
+    ('freelance', _('Freelance')),
+]
