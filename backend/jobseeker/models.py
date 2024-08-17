@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import Profile
+from company.choices import INDUSTRY_CHOICES
 
 class JobseekerProfile(models.Model):
     PUBLIC = 'public'
@@ -32,7 +33,8 @@ class JobseekerProfile(models.Model):
     job_title = models.CharField(max_length=255, blank=True)
     preferred_jobs = models.JSONField(blank=True, null=True)  # Assuming preferred jobs are stored as a list of job titles
     employment_status = models.CharField(max_length=20, choices=EMPLOYMENT_STATUS, default='unemployed')
-    prefereed_locations = models.JSONField(blank=True, null=True)
+    preferred_locations = models.JSONField(blank=True, null=True)
+    preferred_industry = models.CharField(max_length=50, blank=True, null=True, choices=INDUSTRY_CHOICES)
 
     def __str__(self):
         return f"{self.profile.user.username}'s Profile"

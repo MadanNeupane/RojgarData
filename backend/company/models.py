@@ -16,7 +16,7 @@ class Company(models.Model):
     logo = models.ImageField(upload_to='company_logos/', null=True, blank=True)
     cover_image = models.ImageField(upload_to='company_cover_images/', null=True, blank=True)
     company_size = models.CharField(max_length=10, choices=choices.COMPANY_SIZE_CHOICES)
-    industry = models.CharField(max_length=255, choices=choices.INDUSTRY_CHOICES)
+    industry = models.CharField(max_length=50, choices=choices.INDUSTRY_CHOICES)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     location = models.CharField(max_length=255)
     work_emails = models.JSONField(blank=True, null=True)  # List of work email domains

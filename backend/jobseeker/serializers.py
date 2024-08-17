@@ -37,7 +37,7 @@ class JobseekerProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobseekerProfile
-        fields = ['id', 'profile', 'resume', 'skills', 'languages', 'experiences', 'educations', 'trainings', 'profile_visibility', 'job_title', 'preferred_jobs']
+        fields = ['id', 'profile', 'resume', 'skills', 'languages', 'experiences', 'educations', 'trainings', 'profile_visibility', 'job_title', 'employment_status', 'preferred_jobs', 'preferred_locations', 'preferred_industry']
 
     def get_resume(self, obj):
         """
