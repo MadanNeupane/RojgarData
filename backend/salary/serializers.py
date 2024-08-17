@@ -6,9 +6,9 @@ class SalarySubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalarySubmission
         fields = [
-            'id', 'company', 'submitted_by', 'anonymous', 'job_title',
-            'salary_amount', 'currency', 'payment_period', 'years_of_experience',
-            'seniority', 'is_verified', 'created_at'
+            'id', 'company', 'submitted_by', 'anonymous', 'job_title', 'work_status', 'work_type',
+            'years_of_experience', 'seniority', 'currency', 'salary_amount', 'payment_period',
+            'bonus', 'bonus_payment_period','is_verified', 'created_at'
         ]
         read_only_fields = ['id', 'created_at', 'submitted_by', 'is_verified']
 
