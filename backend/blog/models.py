@@ -9,6 +9,7 @@ class BlogPost(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='blog_posts', on_delete=models.SET_NULL, null=True)
     author_name = models.CharField(max_length=255, blank=True, null=True)  # Optional if author is provided
     title = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
     content = models.TextField()
     category = models.CharField(max_length=255, choices=choices.BLOG_CATEGORY_CHOICES)
     tags = models.ManyToManyField('Tag', blank=True, related_name='blog_posts')
