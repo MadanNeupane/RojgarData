@@ -19,6 +19,7 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -39,10 +40,10 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
         console.log(response, " ", response.data);
         if (response.status === 201) {
           console.log(response.data, "response.data");
-          // const accessToken = response.data.access
-          // const refreshToken = response.data.refresh
-          // localStorage.setItem(ACCESS_TOKEN, accessToken)
-          // localStorage.setItem(REFRESH_TOKEN, refreshToken)
+          const accessToken = response.data.access
+          const refreshToken = response.data.refresh
+          localStorage.setItem(ACCESS_TOKEN, accessToken)
+          localStorage.setItem(REFRESH_TOKEN, refreshToken)
           navigate("/");
         }
       } else if (authType === "login") {
@@ -82,15 +83,14 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
               className="mt-4 mb-2 w-80 max-w-screen-lg sm:w-96"
               onSubmit={handleSubmit}
             >
-              <div className="mb-1 flex flex-col gap-3">
+              {/* <div className="mb-1 flex flex-col gap-3"> */}
                 {authType === "register" && (
                   <>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-6">
                       <div>
                         <Typography
                           variant="h6"
                           color="blue-gray"
-                          className="-mb-3"
                         >
                           First Name
                         </Typography>
@@ -101,13 +101,13 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                           labelProps={{
                             className: "before:content-none after:content-none",
                           }}
+                          onChange={(e) => setFirstName(e.target.value)}
                         />
                       </div>
                       <div>
                         <Typography
                           variant="h6"
                           color="blue-gray"
-                          className="-mb-3"
                         >
                           Last Name
                         </Typography>
@@ -118,13 +118,13 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                           labelProps={{
                             className: "before:content-none after:content-none",
                           }}
+                          onChange={(e) => setLastName(e.target.value)}
                         />
                       </div>
                     </div>
                     <Typography
                       variant="h6"
                       color="blue-gray"
-                      className="-mb-3"
                     >
                       Username
                     </Typography>
@@ -135,49 +135,78 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                       labelProps={{
                         className: "before:content-none after:content-none",
                       }}
+                      onChange={(e) => setUsername(e.target.value)}
                     />
                   </>
                 )}
-                <Typography variant="h6" color="blue-gray" className="-mb-3">
+                <Typography variant="h6" color="blue-gray">
                   Email
                 </Typography>
                 <Input
                   size="md"
                   type="email"
                   placeholder="example@rojgardata.com"
-                  className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                  className="!border-t-blue-gray-200 focus:!border-t-gray-900"
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-                <Typography variant="h6" color="blue-gray" className="-mb-3">
-                  Password
-                </Typography>
-                <Input
-                  size="md"
-                  type="password"
-                  placeholder="Password"
-                  className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                  labelProps={{
-                    className: "before:content-none after:content-none",
-                  }}
-                />
-              </div>
-              {authType === "register" ? (
-                <>
-                  <Checkbox
-                    label={
-                      <Typography
-                        variant="small"
-                        color="gray"
-                        className="flex items-center font-normal"
-                      >
-                        I agree the Terms and Conditions
-                      </Typography>
-                    }
-                    containerProps={{ className: "-ml-2.5" }}
+              <div className={authType === 'register' ? 'grid grid-cols-2 gap-6' : ''}>
+                <div>
+                  <Typography
+                    variant="h6"
+                    color="blue-gray"
+                  >
+                    Password
+                  </Typography>
+                  <Input
+                    size="md"
+                    type="password"
+                    placeholder="Password"
+                    className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                    labelProps={{
+                      className: "before:content-none after:content-none",
+                    }}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
-                </>
+                </div>
+
+                {authType === "register" && (
+                  <div>
+                    <Typography
+                      variant="h6"
+                      color="blue-gray"
+                    >
+                      Confirm Password
+                    </Typography>
+                    <Input
+                      size="md"
+                      type="password"
+                      placeholder="Confirm Password"
+                      className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+                      labelProps={{
+                        className: "before:content-none after:content-none",
+                      }}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {authType === "register" ? (
+                <Checkbox
+                  label={
+                    <Typography
+                      variant="small"
+                      color="gray"
+                      className="flex items-center font-normal"
+                    >
+                      I agree the Terms and Conditions
+                    </Typography>
+                  }
+                  containerProps={{ className: "-ml-2.5" }}
+                />
               ) : (
                 <>
                   <Link
@@ -188,9 +217,10 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                   </Link>
                 </>
               )}
-              <Button size="md" className="w-full" disabled={loading}>
+              <Button size="md" className="w-full" type="submit" disabled={loading}>
                 {authType === "register" ? "Register" : "Login"}
               </Button>
+            {/* </div> */}
             </form>
             <Typography color="gray" className="mt-2 text-center font-normal">
               {authType === "register"
@@ -208,6 +238,6 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
       </section>
     </>
   );
-};
+}
 
 export default AuthForm;

@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom"
+import { Button } from "@material-tailwind/react"
+
 
 const NotFound = () => {
   return (
@@ -9,9 +11,9 @@ const NotFound = () => {
             <h2 className="mb-8 font-extrabold text-9xl dark:text-gray-400">
               <span className="sr-only">Error</span>404
             </h2>
-            <p className="text-2xl font-semibold md:text-3xl">Sorry, we can't find this page.</p>
+            <p className="text-2xl font-semibold md:text-3xl">Sorry, we can&apos;t find this page.</p>
             <p className="mt-4 mb-8 dark:text-gray-600">But dont worry, you can find plenty of other things on our homepage.</p>
-            <Link to="/" className="px-8 py-3 font-semibold rounded dark:bg-violet-400 dark:text-gray-900">Back to homepage</Link>
+            <Link to="/"><Button className="px-8 py-3 font-semibold rounded dark:bg-violet-400 dark:text-gray-900">Back to homepage</Button></Link>
           </div>
         </div>
       </section>
