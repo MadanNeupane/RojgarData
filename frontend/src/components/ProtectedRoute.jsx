@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
+import Loading from "./Loading";
 
 function ProtectedRoute({ children }) {
     const [isAuthorized, setIsAuthorized] = useState(null);
@@ -47,7 +48,7 @@ function ProtectedRoute({ children }) {
     };
 
     if (isAuthorized === null) {
-        return <div>Loading...</div>; // Or any other loading indicator
+        return <Loading />;
     }
 
     return isAuthorized ? children : <Navigate to="/login" />
