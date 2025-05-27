@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CalendarDays, CalendarClock, MapPin, Briefcase, IndianRupee, User, ShieldCheck, Building } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { Card, CardContent } from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
+import { Label } from "@/src/components/ui/label";
+import { Search, CalendarDays, CalendarClock, MapPin, IndianRupee, User, ShieldCheck, Building } from "lucide-react";
 import { useEffect, useState } from "react";
 import Navbar from "@/src/components/Navbar";
 import Newsletter from "@/src/components/Newsletter";
@@ -92,8 +92,8 @@ const Home = () => {
         {/* Hero */}
         <section className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-20 px-6 text-center">
           <h1 className="text-4xl font-bold my-4">Find Your Dream Job</h1>
-          <p className="mb-6 text-lg">Explore thousands of job opportunities from top companies.</p>
-          <Button asChild className="bg-emerald-600 text-white">
+          <p className="mb-6 text-lg">Explore hundreds of job opportunities from top companies.</p>
+          <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
             <Link to="/jobs">Browse Jobs</Link>
           </Button>
         </section>
@@ -102,12 +102,16 @@ const Home = () => {
         <section className="px-4 md:px-12 lg:px-24">
           <div className="max-w-3xl mx-auto">
             <Label htmlFor="search">Search Jobs, Companies, Blogs</Label>
-            <Input
-              id="search"
-              value={search}
-              onChange={handleSearchChange}
-              placeholder="Search anything..."
-            />
+            <div className="relative mt-2">
+              <Input
+                id="search"
+                type="text"
+                value={search}
+                onChange={handleSearchChange}
+                placeholder="Search anything..."
+              />
+              <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            </div>
           </div>
         </section>
 

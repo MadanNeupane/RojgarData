@@ -8,13 +8,12 @@ import registerImage from "../../assets/auth/register.svg";
 import {
   Card,
   CardContent,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+} from "@/src/components/ui/card";
+import { Input } from "@/src/components/ui/input";
+import { Checkbox } from "@/src/components/ui/checkbox";
+import { Button } from "@/src/components/ui/button";
+import { Label } from "@/src/components/ui/label";
+import { Spinner } from "@/src/components/ui/spinner";
 
 
 const AuthForm = ({ type, role = "jobseeker" }) => {
@@ -96,7 +95,6 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
       </div>
 
       <div className="flex flex-col items-center justify-center w-full lg:w-1/2 px-4 py-8">
-        {/* <ThemeToggle /> */}
 
         <Card className="w-full max-w-md p-6 shadow-xl border border-gray-200 dark:border-gray-700">
           <CardContent>

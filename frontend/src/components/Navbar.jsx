@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Moon, Sun, Menu, X, User } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Moon, Sun, Menu, X, User, Settings, BookmarkCheck, LogOut } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/src/components/ui/dropdown-menu";
 import logo from "../assets/logo.svg";
 import defaultAvatar from "../assets/avatar.svg"; // fallback if user hasn't uploaded profile pic
 
@@ -53,9 +53,9 @@ const Navbar = ({ isAuthenticated = false, user = {}, onLogout }) => {
           >
             {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button> */}
-          <i onClick={toggleTheme} className={`cursor-pointer ${darkMode ? "text-indigo-600" : "text-gray-700 dark:text-gray-300"} transition`}>
+          {/* <i onClick={toggleTheme} className={`cursor-pointer ${darkMode ? "text-indigo-600" : "text-gray-700 dark:text-gray-300"} transition`}>
             {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </i>
+          </i> */}
 
           {/* Profile / Sign In */}
           {isAuthenticated ? (
@@ -70,28 +70,39 @@ const Navbar = ({ isAuthenticated = false, user = {}, onLogout }) => {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel className="font-medium">{user.name || "User"}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <Link to="/profile">
+                <Link className="text-gray-600" to="/profile">
                   <DropdownMenuItem className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
                 </Link>
-                <Link to="/saved">
+                <Link className="text-gray-600" to="/saved">
                   <DropdownMenuItem className="flex items-center gap-2">
+                    <BookmarkCheck className="h-4 w-4" />
                     Saved
                   </DropdownMenuItem>
                 </Link>
-                <Link to="/settings">
+                <Link className="text-gray-600" to="/settings">
                   <DropdownMenuItem className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
                 </Link>
+                {/* <DropdownMenuItem onClick={toggleTheme} className="flex items-center gap-2">
+                  {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  {darkMode ? "Light Mode" : "Dark Mode"}
+                </DropdownMenuItem> */}
                 <DropdownMenuItem onClick={onLogout} className="text-red-600 hover:bg-red-50">
+                  <LogOut className="h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link to="/login" className="text-sm text-indigo-600 font-medium hover:underline">Sign In</Link>
+            <Link to="/login" className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600">
+              <User className="h-5 w-5" />
+              Sign In
+            </Link>
           )}
 
           {/* Mobile Menu Toggle */}

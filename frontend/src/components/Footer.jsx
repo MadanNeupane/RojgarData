@@ -33,9 +33,8 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-base mb-2">For Employers</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link className="text-gray-600" to="/employers/post-job">Post a Job</Link></li>
-            <li><Link className="text-gray-600" to="/employers/login">Employer Login</Link></li>
-            <li><Link className="text-gray-600" to="/employers/signup">Employer Signup</Link></li>
+            <li><Link className="text-gray-600" to="/employer/register">Employer Register</Link></li>
+            <li><Link className="text-gray-600" to="/employers/jobs">Manage Jobs</Link></li>
             <li><Link className="text-gray-600" to="/pricing">Pricing</Link></li>
             <li><Link className="text-gray-600" to="/support">Support</Link></li>
           </ul>
