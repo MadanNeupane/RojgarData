@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../api";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import loginImage from "../../assets/auth/login.svg";
+import registerImage from "../../assets/auth/register.svg";
 
 import {
   Card,
@@ -11,7 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner"; // assuming you installed/created this
+import { Spinner } from "@/components/ui/spinner";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+
 
 const AuthForm = ({ type, role = "jobseeker" }) => {
   const authType = type;
@@ -21,11 +25,27 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const validate = () => {
+    const newErrors = {};
+    if (!email) newErrors.email = "Email is required.";
+    if (!password) newErrors.password = "Password is required.";
+    if (authType === "register") {
+      if (!firstName) newErrors.firstName = "First name is required.";
+      if (!lastName) newErrors.lastName = "Last name is required.";
+      if (!username) newErrors.username = "Username is required.";
+      if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     try {
       if (authType === "register") {
@@ -58,15 +78,27 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
         }
       }
     } catch (error) {
+      const message = error?.response?.data?.detail || "An error occurred. Please check your inputs.";
+      setErrors({ form: message });
       console.error(error);
     }
     setLoading(false);
   };
 
   return (
-    <section className="flex items-center min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container flex flex-col items-center justify-center px-4 mx-auto">
-        <Card className="w-full max-w-md p-6">
+    <section className="flex flex-col lg:flex-row items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="hidden lg:block w-1/2 p-8">
+        <img
+          src={authType === "register" ? registerImage : loginImage}
+          alt={`${authType} illustration`}
+          className="w-full h-auto"
+        />
+      </div>
+
+      <div className="flex flex-col items-center justify-center w-full lg:w-1/2 px-4 py-8">
+        {/* <ThemeToggle /> */}
+
+        <Card className="w-full max-w-md p-6 shadow-xl border border-gray-200 dark:border-gray-700">
           <CardContent>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">
               {authType === "register" ? "Register" : "Login"}
@@ -77,6 +109,10 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                 : "Welcome back!"}
             </p>
 
+            {errors.form && (
+              <p className="text-sm text-red-500 mb-2">{errors.form}</p>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               {authType === "register" && (
                 <>
@@ -85,26 +121,29 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                       <Label htmlFor="first-name">First Name</Label>
                       <Input
                         id="first-name"
-                        placeholder="First Name"
+                        placeholder="e.g. John"
                         onChange={(e) => setFirstName(e.target.value)}
                       />
+                      {errors.firstName && <p className="text-xs text-red-500">{errors.firstName}</p>}
                     </div>
                     <div>
                       <Label htmlFor="last-name">Last Name</Label>
                       <Input
                         id="last-name"
-                        placeholder="Last Name"
+                        placeholder="e.g. Doe"
                         onChange={(e) => setLastName(e.target.value)}
                       />
+                      {errors.lastName && <p className="text-xs text-red-500">{errors.lastName}</p>}
                     </div>
                   </div>
                   <div>
                     <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
-                      placeholder="Username"
+                      placeholder="e.g. johndoe123"
                       onChange={(e) => setUsername(e.target.value)}
                     />
+                    {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
                   </div>
                 </>
               )}
@@ -117,6 +156,7 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                   placeholder="example@rojgardata.com"
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
               </div>
 
               <div className={authType === "register" ? "grid grid-cols-2 gap-4" : ""}>
@@ -125,9 +165,10 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Password"
+                    placeholder="••••••••"
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
                 </div>
 
                 {authType === "register" && (
@@ -136,16 +177,17 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
                     <Input
                       id="confirm-password"
                       type="password"
-                      placeholder="Confirm Password"
+                      placeholder="Repeat password"
                       onChange={(e) => setConfirmPassword(e.target.value)}
                     />
+                    {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
                   </div>
                 )}
               </div>
 
               {authType === "register" ? (
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="terms" />
+                <div className="flex items-center gap-2">
+                  <Checkbox id="terms" className="border rounded-sm" />
                   <Label htmlFor="terms" className="text-sm text-gray-600">
                     I agree to the Terms and Conditions
                   </Label>
