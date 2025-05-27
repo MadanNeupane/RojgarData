@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, User } from "lucide-react";
+import { CalendarDays, CalendarClock, MapPin, Briefcase, IndianRupee, User, ShieldCheck, Building } from "lucide-react";
 import { useEffect, useState } from "react";
-import Navbar from '../../components/Navbar';
+import Navbar from "@/src/components/Navbar";
+import Newsletter from "@/src/components/Newsletter";
+import Footer from "@/src/components/Footer";
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
@@ -45,6 +47,7 @@ const Home = () => {
         location: "USA",
         experience: "2-4 years",
         company: "Google",
+        isVerified: true,
       },
       {
         id: 2,
@@ -53,6 +56,7 @@ const Home = () => {
         location: "Nepal",
         experience: "1-3 years",
         company: "TechCorp",
+        isVerified: false,
       },
     ]);
     setBlogs([
@@ -85,14 +89,14 @@ const Home = () => {
     <>
       <Navbar isAuthenticated={true} onLogout={() => { localStorage.clear(); window.location.reload(); }} />
       <div className="space-y-12">
+        {/* Hero */}
         <section className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-20 px-6 text-center">
-          <h1 className="text-4xl font-bold mb-4">Find Your Dream Job</h1>
+          <h1 className="text-4xl font-bold my-4">Find Your Dream Job</h1>
           <p className="mb-6 text-lg">Explore thousands of job opportunities from top companies.</p>
           <Button asChild className="bg-emerald-600 text-white">
             <Link to="/jobs">Browse Jobs</Link>
           </Button>
         </section>
-
 
         {/* Search */}
         <section className="px-4 md:px-12 lg:px-24">
@@ -107,6 +111,7 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Featured Jobs */}
         <section className="px-4 md:px-12 lg:px-24">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Recent Jobs</h2>
@@ -114,11 +119,12 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {jobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-md transition">
+              <Card key={job.id} className="rounded-md hover:shadow-md transition">
                 <CardContent className="p-4">
                   <h3 className="text-md font-medium">{job.title}</h3>
-                  <p className="text-sm text-gray-600">{job.company}</p>
-                  <p className="text-xs text-gray-500">{job.location} • {job.type} • {job.salary}</p>
+                  <p className="text-sm text-gray-600 mb-1">{job.company}</p>
+                  <p className="text-xs text-gray-500 mb-2"><MapPin className="inline-block w-4 h-4 mr-1" />{job.location} • <CalendarClock className="inline-block w-4 h-4 mr-1" />{job.type}</p>
+                  <p className="text-xs text-gray-500"><IndianRupee className="inline-block w-4 h-4 mr-1" />{job.salary}</p>
                   <Link to={`/jobs/${job.id}`} className="text-blue-600 hover:underline text-sm mt-2 inline-block">
                     View Details
                   </Link>
@@ -128,6 +134,7 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Featured Companies */}
         <section className="px-4 md:px-12 lg:px-24">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Top Companies</h2>
@@ -135,7 +142,7 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {companies.map((company) => (
-              <Card key={company.id} className="text-center hover:shadow-md transition">
+              <Card key={company.id} className="text-center rounded-md hover:shadow-md transition">
                 <CardContent className="p-4">
                   <img src={`https://ui-avatars.com/api/?name=${company.name}&background=random`} alt={company.name} className="w-12 h-12 mx-auto rounded-full mb-2" />
                   <h3 className="text-sm font-semibold">{company.name}</h3>
@@ -148,6 +155,7 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Salary Insights */}
         <section className="px-4 md:px-12 lg:px-24">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Salary Insights</h2>
@@ -156,14 +164,16 @@ const Home = () => {
           <div className="space-y-2">
             {salaries.map((salary) => (
               <div key={salary.id} className="border p-4 rounded-md">
-                <h3 className="font-medium">{salary.role}</h3>
+                <h3 className="font-medium">{salary.role} <span title="Verified Salary">{salary.isVerified && <ShieldCheck className="inline-block w-4 h-4" />}</span></h3>
+
                 <p className="text-sm text-gray-600">{salary.amount} • {salary.location} • {salary.experience}</p>
-                <p className="text-xs text-gray-500 mt-1">Company: {salary.company}</p>
+                <p className="text-xs text-gray-500 mt-1"><Building className="inline-block w-4 h-4 mr-1" />{salary.company}</p>
               </div>
             ))}
           </div>
         </section>
 
+        {/* Latest Blogs */}
         <section className="px-4 md:px-12 lg:px-24">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Latest Blogs</h2>
@@ -171,7 +181,7 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {blogs.map((blog) => (
-              <Card key={blog.id} className="hover:shadow-md transition">
+              <Card key={blog.id} className="rounded-md hover:shadow-md  transition">
                 <CardContent className="p-4 space-y-2">
                   <h3 className="font-bold text-lg">{blog.title}</h3>
                   <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-2">
@@ -195,20 +205,13 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Newsletter Section */}
         <section className="px-4 md:px-12 lg:px-24 py-12 bg-gray-100 dark:bg-gray-800">
-          <div className="max-w-xl mx-auto text-center">
-            <h2 className="text-2xl font-bold mb-2">Subscribe to our newsletter</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">Get weekly updates on latest jobs and industry trends.</p>
-            <div className="flex items-center gap-2 justify-center">
-              <Input placeholder="Enter your email" className="w-full max-w-sm rounded-md" />
-              <Button>Subscribe</Button>
-            </div>
-          </div>
+            <Newsletter />
         </section>
 
-        <footer className="bg-gray-900 text-white py-6 text-center">
-          <p className="text-sm">&copy; {new Date().getFullYear()} RojgarData. All rights reserved.</p>
-        </footer>
+        {/* Footer */}
+        <Footer />
       </div>
     </>
   );

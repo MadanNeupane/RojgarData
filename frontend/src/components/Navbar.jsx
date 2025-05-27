@@ -23,8 +23,8 @@ const Navbar = ({ isAuthenticated = false, user = {}, onLogout }) => {
   ];
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
-      <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+    <header className="fixed top-0 w-full px-4 h-16 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+      <div className="container mx-auto py-4 flex items-center justify-between">
         {/* Logo and Brand */}
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Logo" className="w-8 h-8" />
