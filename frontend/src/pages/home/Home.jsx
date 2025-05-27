@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/src/components/Navbar";
 import Newsletter from "@/src/components/Newsletter";
 import Footer from "@/src/components/Footer";
+import HeroSection from "@/src/components/HeroSection";
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
@@ -89,14 +90,14 @@ const Home = () => {
     <>
       <Navbar isAuthenticated={true} onLogout={() => { localStorage.clear(); window.location.reload(); }} />
       <div className="space-y-12">
+
         {/* Hero */}
-        <section className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white py-20 px-6 text-center">
-          <h1 className="text-4xl font-bold my-4">Find Your Dream Job</h1>
-          <p className="mb-6 text-lg">Explore hundreds of job opportunities from top companies.</p>
-          <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            <Link to="/jobs">Browse Jobs</Link>
-          </Button>
-        </section>
+        <HeroSection
+          title="Find Your Dream Job"
+          subtitle="Explore hundreds of job opportunities from top companies."
+          buttonLabel="Browse Jobs"
+          buttonLink="/jobs"
+        />
 
         {/* Search */}
         <section className="px-4 md:px-12 lg:px-24">
