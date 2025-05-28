@@ -1,49 +1,115 @@
-import { useState } from "react";
-import SearchFilterBar from "@/src/components/SearchFilterBar";
+import { useEffect, useState } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import api from "@/src/api";
 import PageTemplate from "@/src/components/PageTemplate";
-import JobCard from "@/src/components/JobCard";
-import HeroSection from "@/src/components/HeroSection";
+import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/src/components/ui/button";
+import { Pagination } from "@/src/components/ui/pagination";
+import { toast } from "sonner";
+import { CalendarDays, Eye } from "lucide-react";
+import { Card, CardContent } from "@/src/components/ui/card";
 
 
-const JobsList = () => {
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("");
-  const [filters, setFilters] = useState([
-    { id: "location", label: "Location", value: "", options: ["Kathmandu", "Remote", "Pokhara"] },
-    { id: "type", label: "Job Type", value: "", options: ["Full-time", "Part-time", "Internship"] },
-  ]);
+// Optional placeholder for future filters/sorting
+function SearchFilterBar() {
+  return (
+    <div className="mb-4 flex justify-between items-center">
+      <h2 className="text-lg font-semibold">Open Job Posts</h2>
+    </div>
+  );
+}
 
-  const handleFilterChange = (id, value) => {
-    setFilters((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, value } : f))
-    );
+export default function JobList() {
+  const [jobs, setJobs] = useState([]);
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const page = parseInt(searchParams.get("page") || "1");
+
+  const fetchJobs = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(`/job/posts/?page=${page}`);
+      setJobs(res.data.results);
+      setCount(res.data.count);
+    } catch (err) {
+      toast.error("Failed to load job posts.");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    fetchJobs();
+  }, [page]);
+
+  const totalPages = Math.ceil(count / 10);
+
   return (
-
     <PageTemplate>
-      <HeroSection
-        title="Job Listings"
-        subtitle="Find Your Dream Job"
-        description="Discover a world of opportunities and make a difference in your career with our job listings."
-      />
-      <SearchFilterBar
-        type="jobs"
-        searchValue={search}
-        onSearchChange={setSearch}
-        sortValue={sort}
-        onSortChange={setSort}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-      />
+      <div className="max-w-4xl mx-auto px-4">
+        <SearchFilterBar />
 
-      {/* List of Jobs (filter logic not shown yet) */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 py-6">
-        <JobCard />
-        <JobCard />
+        {loading ? (
+          <p className="text-center text-muted-foreground py-10">Loading jobs...</p>
+        ) : jobs.length === 0 ? (
+          <p className="text-center text-muted-foreground py-10">No job posts found.</p>
+        ) : (
+          <div className="space-y-4">
+            {jobs.map((job) => (
+              <Link to={`/jobs/${job.id}`} key={job.id}>
+                <Card className="hover:shadow-md transition cursor-pointer">
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-lg font-semibold">{job.title}</h3>
+                        <div className="text-sm text-muted-foreground mb-1">{job.location}</div>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {job.skills.map((skill) => (
+                            <Badge key={skill.id} variant="secondary">
+                              {skill.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end text-sm gap-1">
+                        <span className="text-muted-foreground">
+                          NPR {job.salary}
+                        </span>
+                        <span className="flex items-center text-muted-foreground gap-1">
+                          <CalendarDays className="w-4 h-4" />
+                          {new Date(job.deadline).toLocaleDateString()}
+                        </span>
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Eye className="w-4 h-4" />
+                          {job.view_count}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {job.description.replace(/\r?\n|\r/g, " ")}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => {
+                setSearchParams({ page: newPage });
+              }}
+            />
+          </div>
+        )}
       </div>
     </PageTemplate>
   );
-};
-
-export default JobsList;
+}

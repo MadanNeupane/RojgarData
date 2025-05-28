@@ -12,6 +12,9 @@ import CompanyDetails from './pages/companies/CompanyDetails'
 import { Toaster } from "sonner";
 import BlogPosts from './pages/blogs/BlogPosts'
 import SalaryDetails from './pages/salaries/SalaryDetails'
+import SalaryList from './pages/salaries/SalaryList'
+import CompanyList from './pages/companies/CompanyList'
+import BlogList from './pages/blogs/BlogList'
 
 
 
@@ -32,8 +35,10 @@ const App = () => {
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/jobs" element={<ProtectedRoute><JobsList /></ProtectedRoute>} />
         <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
+        <Route path="/companies" element={<ProtectedRoute><CompanyList /></ProtectedRoute>} />
         <Route path="/companies/:id" element={<ProtectedRoute><CompanyDetails /></ProtectedRoute>} />
-        <Route path="/blogs/:id" element={<ProtectedRoute><BlogPosts /></ProtectedRoute>} />
+        <Route path="/blogs" element={<ProtectedRoute><BlogList /></ProtectedRoute>} />
+        <Route path="/salaries" element={<ProtectedRoute><SalaryList /></ProtectedRoute>} />
         <Route path="/salaries/:id" element={<ProtectedRoute><SalaryDetails /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
