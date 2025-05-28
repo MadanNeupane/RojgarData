@@ -5,6 +5,12 @@ import JobseekerRegister from './pages/accounts/JobseekerRegister'
 import Home from './pages/home/Home'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
+import JobsList from './pages/jobs/JobList'
+import JobDetail from './pages/jobs/JobDetails'
+import CompanyDetails from './pages/companies/CompanyDetails'
+
+import { Toaster } from "sonner";
+
 
 
 const Logout = () => {
@@ -22,8 +28,13 @@ const App = () => {
         <Route path="/jobseeker/register" element={<JobseekerRegister />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/jobs" element={<ProtectedRoute><JobsList /></ProtectedRoute>} />
+        <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
+        <Route path="/companies/:id" element={<ProtectedRoute><CompanyDetails /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Toaster richColors position="top-center" />
+
     </BrowserRouter>
   )
 }
