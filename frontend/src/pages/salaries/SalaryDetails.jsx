@@ -1,0 +1,95 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import api from "@/src/api";
+import PageTemplate from "@/src/components/PageTemplate";
+import { Card, CardContent } from "@/src/components/ui/card";
+import { Badge } from "@/src/components/ui/badge";
+import { toast } from "sonner";
+import { CalendarDays, ShieldCheck, UserCircle } from "lucide-react";
+
+export default function SalaryDetails() {
+  const { id } = useParams();
+  const [salary, setSalary] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchSalary = async () => {
+    try {
+      const res = await api.get(`/salary/salaries/${id}`);
+      setSalary(res.data);
+    } catch (error) {
+      toast.error("Failed to fetch salary details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSalary();
+  }, [id]);
+
+  if (loading) return <div className="p-6 text-center text-muted">Loading...</div>;
+  if (!salary) return <div className="p-6 text-center text-muted">Salary data not found.</div>;
+
+  return (
+    <PageTemplate>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <div className="flex justify-between items-center">
+              <h1 className="text-xl font-bold">{salary.job_title}</h1>
+              {salary.is_verified && (
+                <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                  <ShieldCheck className="w-4 h-4" />
+                  Verified
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <span>
+                <strong>Company ID:</strong> {salary.company_name}
+              </span>
+              <span>
+                <strong>Status:</strong> {salary.work_status}
+              </span>
+              <span>
+                <strong>Work Type:</strong> {salary.work_type.replace("_", " ")}
+              </span>
+              <span>
+                <strong>Seniority:</strong> {salary.seniority}
+              </span>
+              <span>
+                <strong>Experience:</strong> {salary.years_of_experience} years
+              </span>
+              <span className="flex items-center">
+                <CalendarDays className="w-4 h-4 mr-1" />
+                {new Date(salary.created_at).toLocaleDateString()}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-sm font-semibold mb-1">Base Salary</h2>
+                <p className="text-lg font-bold">
+                  {salary.currency} {salary.salary_amount.toLocaleString()} / {salary.payment_period}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-sm font-semibold mb-1">Bonus</h2>
+                <p className="text-lg font-bold">
+                  {salary.currency} {salary.bonus.toLocaleString()} / {salary.bonus_payment_period}
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-4 text-sm text-muted-foreground flex items-center gap-2">
+              <UserCircle className="w-4 h-4" />
+              Submitted {salary.anonymous ? "anonymously" : `by user #${salary.submitted_by}`}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </PageTemplate>
+  );
+}

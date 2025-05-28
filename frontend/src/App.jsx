@@ -10,6 +10,8 @@ import JobDetail from './pages/jobs/JobDetails'
 import CompanyDetails from './pages/companies/CompanyDetails'
 
 import { Toaster } from "sonner";
+import BlogPosts from './pages/blogs/BlogPosts'
+import SalaryDetails from './pages/salaries/SalaryDetails'
 
 
 
@@ -31,6 +33,8 @@ const App = () => {
         <Route path="/jobs" element={<ProtectedRoute><JobsList /></ProtectedRoute>} />
         <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
         <Route path="/companies/:id" element={<ProtectedRoute><CompanyDetails /></ProtectedRoute>} />
+        <Route path="/blogs/:id" element={<ProtectedRoute><BlogPosts /></ProtectedRoute>} />
+        <Route path="/salaries/:id" element={<ProtectedRoute><SalaryDetails /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster richColors position="top-center" />
