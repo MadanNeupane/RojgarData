@@ -1,24 +1,27 @@
-import { Link } from "react-router-dom"
-import { Button } from "@material-tailwind/react"
-
+import { Link } from "react-router-dom";
+import { Button } from "@/src/components/ui/button";
 
 const NotFound = () => {
   return (
-    <>
-      <section className="flex items-center h-full p-16 dark:bg-gray-50 dark:text-gray-800">
-        <div className="container flex flex-col items-center justify-center px-5 mx-auto my-8">
-          <div className="max-w-md text-center">
-            <h2 className="mb-8 font-extrabold text-9xl dark:text-gray-400">
-              <span className="sr-only">Error</span>404
-            </h2>
-            <p className="text-2xl font-semibold md:text-3xl">Sorry, we can&apos;t find this page.</p>
-            <p className="mt-4 mb-8 dark:text-gray-600">But dont worry, you can find plenty of other things on our homepage.</p>
-            <Link to="/"><Button className="px-8 py-3 font-semibold rounded dark:bg-violet-400 dark:text-gray-900">Back to homepage</Button></Link>
-          </div>
-        </div>
-      </section>
-    </>
-  )
-}
+    <section className="flex items-center justify-center h-screen px-4 bg-gray-50 dark:bg-gray-900">
+      <div className="text-center max-w-md mx-auto">
+        <h1 className="text-9xl font-extrabold text-gray-300 dark:text-gray-600">
+          404
+        </h1>
+        <p className="text-2xl font-semibold text-gray-800 dark:text-white mt-4">
+          Sorry, we can’t find this page.
+        </p>
+        <p className="mt-2 text-gray-500 dark:text-gray-400">
+          But don’t worry, you can find plenty of other things on our homepage.
+        </p>
+        <Link to="/">
+          <Button className="mt-6 px-8 py-3 text-base">
+            Back to homepage
+          </Button>
+        </Link>
+      </div>
+    </section>
+  );
+};
 
-export default NotFound
+export default NotFound;

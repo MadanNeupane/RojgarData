@@ -1,3 +1,106 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 220 20% 20%; /* Deep gray text */
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 20%;
+
+    --primary: 239 58% 34%; /* Deep Indigo */
+    --primary-foreground: 0 0% 100%; /* white */
+
+    --secondary: 220 9% 65%; /* Soft Gray */
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 220 14% 96%; /* Very light gray */
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 158 64% 47%; /* Emerald Green */
+    --accent-foreground: 0 0% 100%; /* white */
+
+    --destructive: 0 84.2% 60.2%; /* red */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 158 64% 47%; /* Accent as focus ring */
+
+    --chart-1: 239 58% 34%; /* Primary */
+    --chart-2: 158 64% 47%; /* Accent */
+    --chart-3: 220 9% 65%; /* Soft Gray */
+    --chart-4: 43 74% 66%; /* Yellow/Orange */
+    --chart-5: 0 84% 60%; /* Red */
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 239 58% 12%; /* Very dark indigo */
+    --foreground: 0 0% 100%;
+
+    --card: 239 58% 12%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 239 58% 12%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 158 64% 47%; /* Accent becomes primary-ish in dark mode */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 9% 40%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 9% 25%;
+    --muted-foreground: 220 9% 65%;
+
+    --accent: 158 64% 47%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 239 30% 30%;
+    --input: 239 30% 30%;
+    --ring: 158 64% 47%;
+
+    --chart-1: 158 64% 47%;
+    --chart-2: 43 74% 66%;
+    --chart-3: 239 58% 34%;
+    --chart-4: 220 9% 65%;
+    --chart-5: 0 84% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans;
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  input,
+  textarea,
+  select {
+    @apply bg-background text-foreground border border-input rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-ring transition;
+  }
+
+  button {
+    @apply inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors px-4 py-2 font-medium;
+  }
+
+  a {
+    @apply text-accent hover:underline transition-colors;
+  }
+}
