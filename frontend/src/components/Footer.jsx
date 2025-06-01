@@ -44,10 +44,10 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold text-base mb-2">Follow Us</h4>
           <div className="flex space-x-4 text-gray-600">
-            <a href="#" aria-label="Facebook"><Facebook className="w-5 h-5" /></a>
-            <a href="#" aria-label="Twitter"><Twitter className="w-5 h-5" /></a>
-            <a href="#" aria-label="LinkedIn"><Linkedin className="w-5 h-5" /></a>
-            <a href="#" aria-label="Instagram"><Instagram className="w-5 h-5" /></a>
+            <a href="http://www.facebook.com/rojgardata.np" aria-label="Facebook"><Facebook className="w-5 h-5" /></a>
+            <a href="https://twitter.com/rojgardata" aria-label="Twitter"><Twitter className="w-5 h-5" /></a>
+            <a href="https://www.linkedin.com/company/rojgardata" aria-label="LinkedIn"><Linkedin className="w-5 h-5" /></a>
+            <a href="https://www.instagram.com/rojgardata" aria-label="Instagram"><Instagram className="w-5 h-5" /></a>
           </div>
         </div>
       </div>
