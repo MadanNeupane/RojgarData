@@ -1,5 +1,5 @@
 from django.utils.translation import gettext as _
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import OrderingFilter
@@ -30,7 +30,7 @@ class SalarySubmissionViewSet(ModelViewSet):
         elif self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsAdminOrOwner]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [IsAuthenticatedOrReadOnly]
         return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
