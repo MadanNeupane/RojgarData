@@ -37,8 +37,8 @@ RojgarData is developed and maintained by a sole developer committed to improvin
 ✅📌 To-Do (Prioritized)
 
 🔧 Backend
-- [ ] Secure API Endpoints with Proper Permissions
-- [ ] Standardize and Clean Up API Routes
+- [x] Secure API Endpoints with Proper Permissions
+- [x] Standardize and Clean Up API Routes
 - [ ] Optimize Data Models Based on User Research
 
 🎨 Frontend
