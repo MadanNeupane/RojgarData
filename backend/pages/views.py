@@ -1,11 +1,18 @@
 from rest_framework import mixins, viewsets
-from django.views.generic import TemplateView
+from rest_framework.permissions import IsAdminUser, AllowAny
 from .models import Contact
 from .serializers import ContactSerializer
 
 class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
     # def create(self, request, *args, **kwargs):
     #     serializer = self.get_serializer(data=request.data)
@@ -27,23 +34,3 @@ class ContactViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     #         fail_silently=False,
     #     )
 
-
-# Non API Views
-# pages/views.py
-
-from django.views.generic import TemplateView
-
-class HomePageView(TemplateView):
-    template_name = 'pages/home.html'
-
-class AboutView(TemplateView):
-    template_name = 'pages/about.html'
-
-class ContactView(TemplateView):
-    template_name = 'pages/contact.html'
-
-class PrivacyPolicyView(TemplateView):
-    template_name = 'pages/privacy_policy.html'
-
-class TermsOfServiceView(TemplateView):
-    template_name = 'pages/terms_of_service.html'

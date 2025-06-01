@@ -10,20 +10,21 @@ admin.site.index_title = "Welcome to Rojgar Data Admin Portal"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('pages.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('accounts/', include('djoser.urls')),
-    path('accounts/', include('djoser.urls.jwt')),
-    path('jobseeker/', include('jobseeker.urls')),
-    path('company/', include('company.urls')),
-    path('salary/', include('salary.urls')),
-    path('job/', include('job.urls')),
-    path('blog/', include('blog.urls')),
-    path('gamification/', include('gamification.urls')),
-    # path('advertisement/', include('advertisement.urls')),
+    path('contact/', include('pages.urls')),  # Add trailing slash for consistency
+    path('api/v1/', include(([
+        path('accounts/', include('accounts.urls')),
+        path('accounts/', include('djoser.urls')),
+        path('accounts/', include('djoser.urls.jwt')),
+        path('jobseeker/', include('jobseeker.urls')),
+        path('company/', include('company.urls')),
+        path('salary/', include('salary.urls')),
+        path('job/', include('job.urls')),
+        path('blog/', include('blog.urls')),
+        path('gamification/', include('gamification.urls')),
+        # path('advertisement/', include('advertisement.urls')),
+    ], 'api'), namespace='v1')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += debug_toolbar_urls()
-
