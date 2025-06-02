@@ -8,11 +8,12 @@ class SkillSerializer(serializers.ModelSerializer):
 
 class JobPostSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True, read_only=True)
+    company_name = serializers.ReadOnlyField(source='company.name')
 
     class Meta:
         model = JobPost
         fields = [
-            'id', 'company', 'posted_by', 'title', 'description', 'skills',
+            'id', 'company', 'company_name', 'posted_by', 'title', 'description', 'skills',
             'location', 'salary', 'deadline', 'is_active', 'created_at', 'view_count', 'total_bookmarks'
         ]
         read_only_fields = ['id', 'created_at', 'posted_by', 'view_count']

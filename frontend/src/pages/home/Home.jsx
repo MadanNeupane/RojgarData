@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/src/api";
-import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import {
   Search, CalendarDays, CalendarClock, MapPin, IndianRupee,
-  User, ShieldCheck, Building
+  User, ShieldCheck, Building, ArrowRight
 } from "lucide-react";
 import Navbar from "@/src/components/Navbar";
 import Newsletter from "@/src/components/Newsletter";
@@ -30,7 +29,7 @@ const Home = () => {
       try {
         const [jobsRes, companiesRes, salariesRes, blogsRes] = await Promise.all([
           api.get("/job/posts/?limit=10"),
-          api.get("/company/companies/?limit=5"),
+          api.get("/company/companies/?order_by=view_count&limit=5"),
           api.get("/salary/salaries/?limit=2"),
           api.get("/blog/posts/?limit=3"),
         ]);
@@ -51,7 +50,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar isAuthenticated={true} onLogout={() => { localStorage.clear(); window.location.reload(); }} />
+      <Navbar />
       <div className="space-y-12">
         <HeroSection
           title="Find Your Dream Job"
@@ -84,16 +83,22 @@ const Home = () => {
               job ? (
                 <Card key={job.id} className="rounded-md hover:shadow-md transition">
                   <CardContent className="p-4">
-                    <h3 className="text-md font-medium">{job.title}</h3>
-                    <p className="text-sm text-gray-600 mb-1">{job.company__name}</p>
+                    {/* <h3 className="text-md font-medium">{job.title}</h3> */}
+                    <h3 className="text-md font-medium">
+                      <Link to={`/jobs/${job.id}`} className="text-blue-600">
+                        {job.title}
+                      </Link>
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-1">
+                      <Building className="inline-block w-4 h-4 mr-1" />{job.company_name}
+                    </p>
                     <p className="text-xs text-gray-500 mb-2">
-                      <MapPin className="inline-block w-4 h-4 mr-1" />{job.location} •
-                      <CalendarClock className="inline-block w-4 h-4 mr-1" />{job.deadline}
+                      <MapPin className="inline-block w-4 h-4 mr-1" />{job.location} • <CalendarClock className="inline-block w-4 h-4 mr-1" />{job.deadline}
                     </p>
                     <p className="text-xs text-gray-500">
                       <IndianRupee className="inline-block w-4 h-4 mr-1" />{job.salary}
                     </p>
-                    <Link to={`/jobs/${job.id}`} className="text-blue-600 hover:underline text-sm mt-2 inline-block">
+                    <Link to={`/jobs/${job.id}`} className="text-blue-600 text-sm mt-2 inline-block">
                       View Details
                     </Link>
                   </CardContent>
@@ -114,10 +119,11 @@ const Home = () => {
                     <img
                       src={company.logo}
                       alt={company.name}
-                      className="w-12 h-12 mx-auto rounded-full mb-2"
+                      draggable={false}
+                      className="w-12 h-12 mx-auto rounded-full mb-2 select-none"
                     />
                     <h3 className="text-sm font-semibold">{company.name}</h3>
-                    <Link to={`/companies/${company.id}`} className="text-blue-600 hover:underline text-xs mt-2 inline-block">
+                    <Link to={`/companies/${company.id}`} className="text-blue-500 text-xs mt-2 inline-block">
                       View Profile
                     </Link>
                   </CardContent>
@@ -134,14 +140,16 @@ const Home = () => {
             {(salaries || Array(2).fill(null)).map((salary, idx) => (
               salary ? (
                 <div key={salary.id} className="border p-4 rounded-md">
-                  <h3 className="font-medium">
-                    {salary.job_title} {salary.is_verified && <ShieldCheck className="inline-block w-4 h-4" />}
-                  </h3>
+                <h3 className="font-medium">
+                  <Link to={`/salaries/${salary.id}`} className="hover:underline text-blue-500">
+                    {salary.job_title}
+                  </Link> {salary.is_verified && <ShieldCheck className="inline-block w-4 h-4" />}
+                </h3>
                   <p className="text-sm text-gray-600">
                     {salary.currency} {salary.salary_amount}/{salary.payment_period} • {salary.work_type} • {salary.seniority}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    <Building className="inline-block w-4 h-4 mr-1" />{salary.company}
+                    <Building className="inline-block w-4 h-4 mr-1" />{salary.company_name}
                   </p>
                 </div>
               ) : <SkeletonCard key={idx} />
@@ -157,9 +165,16 @@ const Home = () => {
               blog ? (
                 <Card key={blog.id} className="rounded-md hover:shadow-md transition">
                   <CardContent className="p-4 space-y-2">
-                    <h3 className="font-bold text-lg">{blog.title}</h3>
+                    <h3 className="font-bold text-lg">
+                      <Link to={`/blogs/${blog.id}`} className="text-blue-500">
+                        {blog.title}
+                      </Link>
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {blog.content.length > 100 ? `${blog.content.slice(0, 100)}...` : blog.content}
+                    </p>
                     <div className="flex items-center text-sm text-gray-600 gap-2">
-                      <User className="w-4 h-4" /><span>{blog.author}</span>
+                      <User className="w-4 h-4" /><span>{blog.author_name}</span>
                       <CalendarDays className="w-4 h-4 ml-4" /><span>{new Date(blog.created_at).toDateString()}</span>
                     </div>
                     <p className="text-sm text-gray-600">{blog.excerpt}</p>
@@ -168,7 +183,7 @@ const Home = () => {
                         <span key={tag.id} className="bg-gray-200 rounded-full px-2 py-0.5">#{tag.name}</span>
                       ))}
                     </div>
-                    <Link to={`/blogs/${blog.id}`} className="text-blue-600 hover:underline text-sm inline-block">
+                    <Link to={`/blogs/${blog.id}`} className="text-blue-600 text-sm inline-block">
                       Read more →
                     </Link>
                   </CardContent>
@@ -191,8 +206,15 @@ const Home = () => {
 const SectionHeader = ({ title, link }) => (
   <div className="flex justify-between items-center mb-4">
     <h2 className="text-xl font-semibold">{title}</h2>
-    <Link to={link} className="text-blue-600 hover:underline text-sm">Explore more</Link>
+    <Link
+      to={link}
+      className="group inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+    >
+      Explore more
+      <ArrowRight className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+    </Link>
   </div>
 );
+
 
 export default Home;

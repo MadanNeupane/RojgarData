@@ -10,7 +10,7 @@ import {
 import logo from "../assets/logo.svg";
 import defaultAvatar from "../assets/avatar.svg";
 
-const Navbar = ({ isAuthenticated = false, user = {}, onLogout }) => {
+const Navbar = ({ isAuthenticated, user = {}, onLogout }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const Navbar = ({ isAuthenticated = false, user = {}, onLogout }) => {
     <header className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 sm:px-6 lg:px-24">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:no-underline">
           <img src={logo} alt="Logo" className="h-8 w-8" />
           <span className="hidden text-xl font-bold text-indigo-600 dark:text-emerald-400 md:inline">
             RojgarData
@@ -39,7 +39,7 @@ const Navbar = ({ isAuthenticated = false, user = {}, onLogout }) => {
             <NavLink
               key={link.href}
               to={link.href}
-              className="hover:text-indigo-600 transition-colors"
+              className="hover:text-indigo-600 transition-colors hover:no-underline"
             >
               {link.label}
             </NavLink>

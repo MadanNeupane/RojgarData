@@ -7,7 +7,7 @@ const HeroSection = ({ title, subtitle, description, buttonLabel, buttonLink }) 
       {title && <h1 className="text-4xl font-bold my-4">{title}</h1>}
       {subtitle && <p className="mb-6 text-lg">{subtitle}</p>}
       {buttonLabel && buttonLink && (
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white hover:no-underline">
           <Link to={buttonLink}>{buttonLabel}</Link>
         </Button>
       )}

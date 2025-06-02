@@ -3,10 +3,16 @@ from rest_framework import serializers
 from .models import SalarySubmission, SalaryReport
 
 class SalarySubmissionSerializer(serializers.ModelSerializer):
+    company_name = serializers.ReadOnlyField(source='company.name')
+    work_type = serializers.CharField(source='get_work_type_display')
+    payment_period = serializers.CharField(source='get_payment_period_display')
+    seniority = serializers.CharField(source='get_seniority_display')
+    currency = serializers.CharField(source='get_currency_display')
+
     class Meta:
         model = SalarySubmission
         fields = [
-            'id', 'company', 'submitted_by', 'anonymous', 'job_title', 'work_status', 'work_type',
+            'id', 'company', 'company_name', 'submitted_by', 'anonymous', 'job_title', 'work_status', 'work_type',
             'years_of_experience', 'seniority', 'currency', 'salary_amount', 'payment_period',
             'bonus', 'bonus_payment_period','is_verified', 'created_at'
         ]
