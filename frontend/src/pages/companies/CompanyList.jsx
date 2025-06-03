@@ -107,7 +107,7 @@ const CompanyList = () => {
                         <Link to={`/companies/${id}`}>{name}</Link>
                       </h3>
 
-                      <div className="mt-1 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <div className="mt-1">
                         <div className="flex items-center gap-1">
                           <MapPin className="w-4 h-4" />
                           <span>{location}</span>

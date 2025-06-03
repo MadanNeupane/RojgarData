@@ -54,6 +54,7 @@ const SalaryList = () => {
             <SearchBar
               className="w-full"
               label="Salary"
+              live={true}
               placeholder="Search by company, job title, etc..."
               endpoint="/salary/salaries/"
               onSearch={(q) => setQuery(q)}

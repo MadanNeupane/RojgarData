@@ -26,8 +26,12 @@ const SalaryDetails = () => {
       try {
         const res = await api.get(`/salary/salaries/${id}`);
         setSalary(res.data);
-      } catch {
-        toast.error("Failed to fetch salary details.");
+      } catch (error) {
+        if (error.response.status === 404) {
+          window.location.href = "/404";
+        } else {
+          toast.error("Failed to fetch salary.");
+        }
       } finally {
         setLoading(false);
       }
@@ -35,9 +39,6 @@ const SalaryDetails = () => {
 
     fetchSalary();
   }, [id]);
-
-  if (loading) return <div className="p-6 text-center text-muted">Loading...</div>;
-  if (!salary) return <div className="p-6 text-center text-muted">Salary data not found.</div>;
 
   const InfoItem = ({ icon: Icon, label, value }) => (
     <span className="flex items-center gap-1">
@@ -48,6 +49,11 @@ const SalaryDetails = () => {
 
   return (
     <PageTemplate>
+      {loading ? (
+        <div className="p-6 text-center">Loading...</div>
+      ) : !salary ? (
+        <div className="p-6 text-center">Salary data not found.</div>
+      ) : (
       <div className="max-w-3xl mx-auto space-y-6">
         <Card>
           <CardContent className="p-6 space-y-4">
@@ -93,6 +99,8 @@ const SalaryDetails = () => {
           </CardContent>
         </Card>
       </div>
+      )}
+
     </PageTemplate>
   );
 }

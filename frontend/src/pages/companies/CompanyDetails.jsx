@@ -13,17 +13,32 @@ import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Button } from "@/src/components/ui/button";
 import {
-  Star,
-  Send,
-  MessageSquarePlus,
-  Briefcase,
-  EyeIcon,
   MapPin,
+  Users,
+  Factory,
+  Phone,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  Youtube,
+  Globe,
+  Mail,
+
 } from "lucide-react";
 import PageTemplate from "@/src/components/PageTemplate";
 import Sidebar from "@/src/components/layout/Sidebar";
 import { toast } from "sonner";
 
+const SocialPlatformIcons = {
+  facebook: <Facebook />,
+  twitter: <Twitter />,
+  linkedin: <Linkedin />,
+  instagram: <Instagram />,
+  youtube: <Youtube />,
+  tiktok: <Globe />,
+  website: <Globe />,
+};
 
 const CompanyDetails = () => {
   const { id } = useParams();
@@ -51,7 +66,11 @@ const CompanyDetails = () => {
       const data = res.data.results ? res.data.results[0] : res.data;
       setCompany(data);
     } catch (error) {
-      toast.error("Failed to fetch company data.");
+      if (error.response.status === 404) {
+        window.location.href = "/404";
+      } else {
+        toast.error("Failed to fetch company.");
+      }
     } finally {
       setLoading(false);
     }
@@ -123,27 +142,29 @@ const CompanyDetails = () => {
           {/* Sidebar */}
           <Sidebar position="left">
             <Card>
-              <CardContent className="p-4 flex flex-col items-center">
+              <CardContent className="p-4 flex flex-col items-center text-center space-y-2">
                 <img
-                  src={company.logo || defaultAvatar}
+                  src={company.logo || "/assets/company.svg"}
                   alt={company.name}
-                  className="w-24 h-24 mb-2"
+                  className="w-24 h-24 mb-2 rounded-full object-cover border border-gray-300 dark:border-gray-600 select-none"
                 />
-                <h2 className="text-lg font-semibold text-center">{company.name}</h2>
-                <p className="text-sm text-muted-foreground">
-                  <MapPin className="inline-block mr-1 h-4 w-4" />
+                <h2 className="text-lg font-semibold">{company.name}</h2>
+                <p className="text-sm text-muted-foreground flex items-center justify-center">
+                  <MapPin className="h-4 w-4 mr-1" />
                   {company.location}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  {company.industry} • {company.company_size}
+                <p className="text-sm flex items-center justify-center text-muted-foreground">
+                    <Factory className="h-4 w-4 mr-1" />{company.industry_name} • <Users className="h-4 w-4 mx-1" /> {company.company_size}
                 </p>
-                {company.phone_number && <p className="text-sm">{company.phone_number}</p>}
-                {company.work_emails && <p className="text-sm">{company.work_emails}</p>}
-                <p className="text-xs text-muted-foreground mt-2">
-                  <EyeIcon className="inline-block mr-1" />
-                  {company.view_count} views • {company.total_followers} followers
-                </p>
-                <Button className="mt-2" onClick={handleFollow}>Follow</Button>
+                {company.phone_number && (
+                  <p className="text-sm flex items-center justify-center text-muted-foreground">
+                    <Phone className="h-4 w-4 mr-1" />
+                    {company.phone_number}
+                  </p>
+                )}
+                <Button onClick={handleFollow} className="rounded-md mt-2">
+                  Follow
+                </Button>
               </CardContent>
             </Card>
 
@@ -151,30 +172,34 @@ const CompanyDetails = () => {
               <Card>
                 <CardContent className="p-4 space-y-1">
                   <p className="font-semibold">Social Links</p>
-                  {company.social_links.map((link) => (
-                    <a
-                      key={link.url}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-blue-600 text-sm hover:underline"
-                    >
-                      {link.platform}
-                    </a>
-                  ))}
+                  <div className="flex gap-4">
+                    {company.social_links.map((link) => (
+                      SocialPlatformIcons[link.platform] && (
+                        <a
+                          key={link.url}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-gray-600 hover:text-gray-800 transition-colors"
+                        >
+                          {SocialPlatformIcons[link.platform]}
+                        </a>
+                      )
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             )}
           </Sidebar>
 
           {/* Main content */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 border rounded-md p-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList>
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="jobs">Jobs</TabsTrigger>
-                <TabsTrigger value="reviews">Reviews</TabsTrigger>
-                <TabsTrigger value="questions">Questions</TabsTrigger>
+              <TabsList className="w-full">
+                <TabsTrigger className="w-1/4 px" value="about">About</TabsTrigger>
+                <TabsTrigger className="w-1/4 px" value="jobs">Jobs</TabsTrigger>
+                <TabsTrigger className="w-1/4 px" value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger className="w-1/4 px" value="questions">Questions</TabsTrigger>
               </TabsList>
 
               <TabsContent value="about">

@@ -15,6 +15,8 @@ import {
   BookmarkCheck,
   Mail,
   Phone,
+  Factory,
+  Users,
 } from "lucide-react";
 
 import Sidebar from "@/src/components/layout/Sidebar";
@@ -33,7 +35,11 @@ const JobDetails = () => {
       setBookmarked(res.data?.bookmarked || false);
       fetchCompany(res.data.company);
     } catch (error) {
-      toast.error("Failed to fetch job details.");
+      if (error.response.status === 404) {
+        window.location.href = "/404";
+      } else {
+        toast.error("Failed to fetch job.");
+      }
     } finally {
       setLoading(false);
     }
@@ -73,11 +79,13 @@ const JobDetails = () => {
     fetchJob();
   }, [id]);
 
-  if (loading) return <div className="p-6 text-center text-muted">Loading...</div>;
-  if (!job) return <div className="p-6 text-center text-muted">Job not found.</div>;
-
   return (
     <PageTemplate>
+      {loading ? (
+        <div className="p-6 text-center text-muted">Loading...</div>
+      ) : !job ? (
+        <div className="p-6 text-center text-muted">Job not found.</div>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Sidebar position="left">
           {company && (
@@ -86,26 +94,20 @@ const JobDetails = () => {
                 <img
                   src={company.logo || "/assets/company.svg"}
                   alt={company.name}
-                  className="w-24 h-24 mb-2 rounded-full object-cover"
+                  className="w-24 h-24 mb-2 rounded-full object-cover border border-gray-300 dark:border-gray-600 select-none"
                 />
                 <h2 className="text-lg font-semibold">{company.name}</h2>
                 <p className="text-sm text-muted-foreground flex items-center justify-center">
                   <MapPin className="h-4 w-4 mr-1" />
                   {company.location}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  {company.industry_name} • {company.company_size}
+                <p className="text-sm flex items-center justify-center text-muted-foreground">
+                    <Factory className="h-4 w-4 mr-1" />{company.industry_name} • <Users className="h-4 w-4 mx-1" /> {company.company_size}
                 </p>
                 {company.phone_number && (
-                  <p className="text-sm flex items-center justify-center">
+                  <p className="text-sm flex items-center justify-center text-muted-foreground">
                     <Phone className="h-4 w-4 mr-1" />
                     {company.phone_number}
-                  </p>
-                )}
-                {company.work_emails && (
-                  <p className="text-sm flex items-center justify-center">
-                    <Mail className="h-4 w-4 mr-1" />
-                    {company.work_emails}
                   </p>
                 )}
                 <Link
@@ -123,7 +125,7 @@ const JobDetails = () => {
                   <Button
                     variant="outline"
                     onClick={toggleBookmark}
-                    className="w-full flex items-center justify-center gap-1 text-neutral-500"
+                    className="w-full flex items-center justify-center gap-1 text-neutral-500 dark:hover:bg-neutral-800"
                   >
                     {bookmarked ? (
                       <>
@@ -192,6 +194,8 @@ const JobDetails = () => {
           </Card>
         </div>
       </div>
+      )}
+
     </PageTemplate>
   );
 }

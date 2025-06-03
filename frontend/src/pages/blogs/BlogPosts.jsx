@@ -30,7 +30,11 @@ const BlogPosts =() => {
       setPost(res.data);
       setBookmarked(res.data?.bookmarked || false);
     } catch (error) {
-      toast.error("Failed to fetch blog post.");
+      if (error.response.status === 404) {
+        window.location.href = "/404";
+      } else {
+        toast.error("Failed to fetch post.");
+      }
     } finally {
       setLoading(false);
     }
@@ -55,11 +59,14 @@ const BlogPosts =() => {
     fetchPost();
   }, [id]);
 
-  if (loading) return <div className="p-6 text-center text-muted">Loading...</div>;
-  if (!post) return <div className="p-6 text-center text-muted">Post not found.</div>;
-
   return (
     <PageTemplate>
+      {loading ? (
+        <div className="p-6 text-center">Loading...</div>
+      ) : !post ? (
+        <div className="p-6 text-center">Post not found.</div>
+      ) : (
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Sidebar for author and actions */}
         <Sidebar position="left">
@@ -184,6 +191,7 @@ const BlogPosts =() => {
           </Card>
         </div>
       </div>
+      )}
     </PageTemplate>
   );
 }
