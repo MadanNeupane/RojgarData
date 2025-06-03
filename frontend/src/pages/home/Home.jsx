@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "@/src/api";
 import { Card, CardContent } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+
 import {
-  Search, CalendarDays, CalendarClock, MapPin, IndianRupee,
+  CalendarDays, CalendarClock, MapPin, IndianRupee,
   User, ShieldCheck, Building, ArrowRight
 } from "lucide-react";
 import Navbar from "@/src/components/Navbar";
 import Newsletter from "@/src/components/Newsletter";
 import Footer from "@/src/components/Footer";
 import HeroSection from "@/src/components/HeroSection";
+import SearchBar from "@/src/components/SearchBar";
 
 const SkeletonCard = () => (
   <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-40 rounded-md" />
@@ -22,7 +22,6 @@ const Home = () => {
   const [companies, setCompanies] = useState(null);
   const [salaries, setSalaries] = useState(null);
   const [blogs, setBlogs] = useState(null);
-  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,8 +45,6 @@ const Home = () => {
     fetchData();
   }, []);
 
-  const handleSearchChange = (e) => setSearch(e.target.value);
-
   return (
     <>
       <Navbar />
@@ -60,42 +57,48 @@ const Home = () => {
         />
 
         <section className="px-4 md:px-12 lg:px-24">
-          <div className="max-w-3xl mx-auto">
-            <Label htmlFor="search">Search Jobs, Companies, Blogs</Label>
-            <div className="relative mt-2">
-              <Input
-                id="search"
-                type="text"
-                value={search}
-                onChange={handleSearchChange}
-                placeholder="Search anything..."
-              />
-              <Search className="absolute top-1/2 right-3 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            </div>
-          </div>
+          <SearchBar
+            label="Jobs, Companies, Salaries, Blogs"
+            live={true}
+            onSearchResults={async (q) => {
+              try {
+                const [jobsRes, companiesRes, blogsRes, salariesRes] = await Promise.all([
+                  api.get(`/job/posts/?search=${q}`),
+                  api.get(`/company/companies/?search=${q}`),
+                  api.get(`/blog/posts/?search=${q}`),
+                  api.get(`/salary/salaries/?search=${q}`),
+                ]);
+                setJobs(jobsRes.data?.results || []);
+                setCompanies(companiesRes.data?.results || []);
+                setBlogs(blogsRes.data?.results || []);
+                setSalaries(salariesRes.data?.results || []);
+              } catch (err) {
+                console.error("Multi-search failed:", err);
+              }
+            }}
+          />
         </section>
 
         {/* Jobs */}
-        <section className="px-4 md:px-12 lg:px-24">
-          <SectionHeader title="Recent Jobs" link="/jobs" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {(jobs || Array(4).fill(null)).map((job, idx) => (
-              job ? (
+        {jobs?.length > 0 && (
+          <section className="px-4 md:px-12 lg:px-24">
+            <SectionHeader title="Recent Jobs" link="/jobs" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {jobs.map((job) => (
                 <Card key={job.id} className="rounded-md hover:shadow-md transition">
                   <CardContent className="p-4">
-                    {/* <h3 className="text-md font-medium">{job.title}</h3> */}
                     <h3 className="text-md font-medium">
                       <Link to={`/jobs/${job.id}`} className="text-blue-600">
                         {job.title}
                       </Link>
                     </h3>
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                       <Building className="inline-block w-4 h-4 mr-1" />{job.company_name}
                     </p>
-                    <p className="text-xs text-gray-500 mb-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">
                       <MapPin className="inline-block w-4 h-4 mr-1" />{job.location} • <CalendarClock className="inline-block w-4 h-4 mr-1" />{job.deadline}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                       <IndianRupee className="inline-block w-4 h-4 mr-1" />{job.salary}
                     </p>
                     <Link to={`/jobs/${job.id}`} className="text-blue-600 text-sm mt-2 inline-block">
@@ -103,66 +106,66 @@ const Home = () => {
                     </Link>
                   </CardContent>
                 </Card>
-              ) : <SkeletonCard key={idx} />
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Companies */}
-        <section className="px-4 md:px-12 lg:px-24">
-          <SectionHeader title="Top Companies" link="/companies" />
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {(companies || Array(5).fill(null)).map((company, idx) => (
-              company ? (
+        {companies?.length > 0 && (
+          <section className="px-4 md:px-12 lg:px-24">
+            <SectionHeader title="Top Companies" link="/companies" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {companies.map((company) => (
                 <Card key={company.id} className="text-center rounded-md hover:shadow-md transition">
                   <CardContent className="p-4">
                     <img
                       src={company.logo}
                       alt={company.name}
                       draggable={false}
-                      className="w-12 h-12 mx-auto rounded-full mb-2 select-none"
+                      className="w-12 h-12 mx-auto rounded-full mb-2 border border-gray-300 dark:border-gray-600 select-none"
                     />
-                    <h3 className="text-sm font-semibold">{company.name}</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200">{company.name}</h3>
                     <Link to={`/companies/${company.id}`} className="text-blue-500 text-xs mt-2 inline-block">
                       View Profile
                     </Link>
                   </CardContent>
                 </Card>
-              ) : <SkeletonCard key={idx} />
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Salaries */}
-        <section className="px-4 md:px-12 lg:px-24">
-          <SectionHeader title="Salary Insights" link="/salaries" />
-          <div className="space-y-2">
-            {(salaries || Array(2).fill(null)).map((salary, idx) => (
-              salary ? (
+        {salaries?.length > 0 && (
+          <section className="px-4 md:px-12 lg:px-24">
+            <SectionHeader title="Salary Insights" link="/salaries" />
+            <div className="space-y-2">
+              {salaries.map((salary) => (
                 <div key={salary.id} className="border p-4 rounded-md">
-                <h3 className="font-medium">
-                  <Link to={`/salaries/${salary.id}`} className="hover:underline text-blue-500">
-                    {salary.job_title}
-                  </Link> {salary.is_verified && <ShieldCheck className="inline-block w-4 h-4" />}
-                </h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-medium">
+                    <Link to={`/salaries/${salary.id}`} className="hover:underline text-blue-500">
+                      {salary.job_title}
+                    </Link> {salary.is_verified && <ShieldCheck className="inline-block w-4 h-4" />}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
                     {salary.currency} {salary.salary_amount}/{salary.payment_period} • {salary.work_type} • {salary.seniority}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                     <Building className="inline-block w-4 h-4 mr-1" />{salary.company_name}
                   </p>
                 </div>
-              ) : <SkeletonCard key={idx} />
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Blogs */}
-        <section className="px-4 md:px-12 lg:px-24">
-          <SectionHeader title="Latest Blogs" link="/blogs" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {(blogs || Array(3).fill(null)).map((blog, idx) => (
-              blog ? (
+        {blogs?.length > 0 && (
+          <section className="px-4 md:px-12 lg:px-24">
+            <SectionHeader title="Latest Blogs" link="/blogs" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {blogs.map((blog) => (
                 <Card key={blog.id} className="rounded-md hover:shadow-md transition">
                   <CardContent className="p-4 space-y-2">
                     <h3 className="font-bold text-lg">
@@ -170,17 +173,17 @@ const Home = () => {
                         {blog.title}
                       </Link>
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                       {blog.content.length > 100 ? `${blog.content.slice(0, 100)}...` : blog.content}
                     </p>
-                    <div className="flex items-center text-sm text-gray-600 gap-2">
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 gap-2">
                       <User className="w-4 h-4" /><span>{blog.author_name}</span>
                       <CalendarDays className="w-4 h-4 ml-4" /><span>{new Date(blog.created_at).toDateString()}</span>
                     </div>
-                    <p className="text-sm text-gray-600">{blog.excerpt}</p>
-                    <div className="flex flex-wrap gap-1 text-xs text-gray-500">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{blog.excerpt}</p>
+                    <div className="flex flex-wrap gap-1 text-xs text-gray-500 dark:text-gray-300">
                       {blog.tags.map(tag => (
-                        <span key={tag.id} className="bg-gray-200 rounded-full px-2 py-0.5">#{tag.name}</span>
+                        <span key={tag.id} className="bg-gray-200 dark:bg-gray-700 rounded-full px-2 py-0.5">#{tag.name}</span>
                       ))}
                     </div>
                     <Link to={`/blogs/${blog.id}`} className="text-blue-600 text-sm inline-block">
@@ -188,10 +191,10 @@ const Home = () => {
                     </Link>
                   </CardContent>
                 </Card>
-              ) : <SkeletonCard key={idx} />
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="px-4 md:px-12 lg:px-24 py-12 bg-gray-100 dark:bg-gray-800">
           <Newsletter />
@@ -215,6 +218,5 @@ const SectionHeader = ({ title, link }) => (
     </Link>
   </div>
 );
-
 
 export default Home;

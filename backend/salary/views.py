@@ -23,6 +23,7 @@ class SalarySubmissionViewSet(ModelViewSet):
     filterset_class = SalarySubmissionFilter
     ordering_fields = ['created_at', 'salary_amount', 'total_reports']  # Enable sorting by total_reports
     ordering = ['-created_at']  # Default ordering
+    search_fields = ['company_name', 'job_title', 'seniority', 'work_type']
 
     def get_permissions(self):
         if self.action in ['create']:

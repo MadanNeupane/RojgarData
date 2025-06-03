@@ -5,6 +5,7 @@ from .models import SalarySubmission, SalaryReport
 class SalarySubmissionSerializer(serializers.ModelSerializer):
     company_name = serializers.ReadOnlyField(source='company.name')
     work_type = serializers.CharField(source='get_work_type_display')
+    work_status = serializers.CharField(source='get_work_status_display')
     payment_period = serializers.CharField(source='get_payment_period_display')
     seniority = serializers.CharField(source='get_seniority_display')
     currency = serializers.CharField(source='get_currency_display')

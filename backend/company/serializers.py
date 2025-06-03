@@ -86,12 +86,13 @@ class CompanySerializer(serializers.ModelSerializer):
     social_links = SocialLinkSerializer(many=True, read_only=True)
     reviews = CompanyReviewSerializer(many=True, read_only=True)
     questions = CompanyQuestionSerializer(many=True, read_only=True)
+    industry_name = serializers.CharField(source='get_industry_display')
 
     class Meta:
         model = Company
         fields = [
-            'id', 'name', 'description', 'logo', 'cover_image', 'company_size', 'industry',
+            'id', 'name', 'description', 'logo', 'cover_image', 'company_size', 'industry', 'industry_name',
             'phone_number', 'location', 'work_emails', 'view_count', 'social_links', 'reviews', 'questions', 'total_followers'
         ]
 
-    read_only_fields = ['id', 'view_count', 'total_followers']
+    read_only_fields = ['id', 'view_count', 'total_followers', 'industry_name']

@@ -1,36 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "@/src/api";
 import PageTemplate from "@/src/components/PageTemplate";
 import { Card, CardContent } from "@/src/components/ui/card";
-import { Badge } from "@/src/components/ui/badge";
-import { CalendarDays, ChevronRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Pagination } from "@/src/components/ui/pagination";
 import { toast } from "sonner";
+import {
+  CalendarDays,
+  ChevronRight,
+  ShieldCheck,
+  Briefcase,
+  UserCheck,
+  Clock,
+} from "lucide-react";
+import SearchBar from "@/src/components/SearchBar";
 
-// Optional: placeholder filter/search bar
-function SearchFilterBar() {
-  return (
-    <div className="mb-4 flex justify-between items-center">
-      <h2 className="text-lg font-semibold">Salary Submissions</h2>
-      {/* Future: Search, Sort, Filter */}
-    </div>
-  );
-}
-
-export default function SalaryList() {
+const SalaryList = () => {
   const [salaries, setSalaries] = useState([]);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState("");
 
   const page = parseInt(searchParams.get("page") || "1");
 
-  const fetchSalaries = async () => {
+  const fetchSalaries = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/salary/salaries/?page=${page}`);
+      const res = await api.get(`/salary/salaries/?page=${page}&search=${query}`);
       setSalaries(res.data.results);
       setCount(res.data.count);
     } catch (error) {
@@ -38,68 +36,80 @@ export default function SalaryList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, query]);
 
   useEffect(() => {
     fetchSalaries();
-  }, [page]);
+  }, [fetchSalaries]);
 
   const totalPages = Math.ceil(count / 10);
 
   return (
     <PageTemplate>
       <div className="max-w-4xl mx-auto px-4">
-        <SearchFilterBar />
+        <div className="mb-6 space-y-4">
+          <h1 className="text-xl font-semibold">Salary Submissions</h1>
+
+          <div className="border border-gray-200 dark:border-gray-700 rounded-md">
+            <SearchBar
+              className="w-full"
+              label="Salary"
+              placeholder="Search by company, job title, etc..."
+              endpoint="/salary/salaries/"
+              onSearch={(q) => setQuery(q)}
+            />
+          </div>
+        </div>
+
         {loading ? (
-          <p className="text-muted text-center py-10">Loading salaries...</p>
+          <p className="text-muted-foreground text-center py-10">Loading salaries...</p>
         ) : salaries.length === 0 ? (
-          <p className="text-muted text-center py-10">No salaries found.</p>
+          <p className="text-muted-foreground text-center py-10">No salaries found.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {salaries.map((salary) => (
-              <Link to={`/salaries/${salary.id}`} key={salary.id}>
-                <Card className="hover:shadow-lg transition cursor-pointer">
-                  <CardContent className="p-4 flex justify-between items-center">
-                    <div>
-                      <h3 className="text-lg font-semibold">{salary.job_title}</h3>
-                      <div className="text-sm text-muted-foreground flex flex-wrap gap-3 mt-1">
-                        <span>{salary.work_status}</span>
-                        <span>{salary.seniority}</span>
-                        <span>{salary.years_of_experience} yrs</span>
+              <Card key={salary.id}>
+                <CardContent className="p-4 flex justify-between items-start gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
+                        <Link to={`/salaries/${salary.id}`}>
+                          {salary.job_title}
+                        </Link>
+                      </h3>
+                      {salary.is_verified && <ShieldCheck className="w-5 h-5" />}
+                    </div>
+
+                    <div className="space-y-1 text-sm text-gray-800 dark:text-gray-200">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Briefcase className="w-4 h-4" /> <span>{salary.work_status}</span>
+                        <UserCheck className="w-4 h-4" /> <span>{salary.seniority}</span>
+                        <Clock className="w-4 h-4" /> <span>{salary.years_of_experience} yrs</span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span>{salary.currency} {salary.salary_amount.toLocaleString()} / {salary.payment_period}</span>
-                        <span className="flex items-center gap-1">
-                          <CalendarDays className="w-4 h-4" />
-                          {new Date(salary.created_at).toLocaleDateString()}
-                        </span>
+                        <CalendarDays className="w-4 h-4" /> <span>{new Date(salary.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      {salary.is_verified && (
-                        <Badge className="bg-green-100 text-green-800">
-                          <ShieldCheck className="w-4 h-4 mr-1 inline-block" />
-                          Verified
-                        </Badge>
-                      )}
-                      <Button size="icon" variant="ghost">
-                        <ChevronRight className="w-5 h-5" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </div>
+
+                  <Link to={`/salaries/${salary.id}`}>
+                    <Button size="icon" variant="ghost">
+                      <ChevronRight className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-6">
             <Pagination
               currentPage={page}
               totalPages={totalPages}
-              onPageChange={(newPage) => {
-                setSearchParams({ page: newPage });
-              }}
+              onPageChange={(newPage) => setSearchParams({ page: newPage })}
             />
           </div>
         )}
@@ -107,3 +117,5 @@ export default function SalaryList() {
     </PageTemplate>
   );
 }
+
+export default SalaryList

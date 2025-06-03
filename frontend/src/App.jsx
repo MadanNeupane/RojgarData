@@ -43,7 +43,7 @@ const App = () => (
           <Route key={path} path={path} element={element} />
         ))}
       </Routes>
-      <Toaster richColors position="top-center" />
+      <Toaster richColors position="bottom-center" />
     </BrowserRouter>
   </AuthProvider>
 );
