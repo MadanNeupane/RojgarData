@@ -4,6 +4,7 @@ import api from "@/src/api";
 import PageTemplate from "@/src/components/PageTemplate";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/src/components/ui/button"; // ✅ for Apply/Bookmark
 import { toast } from "sonner";
 import {
   Briefcase,
@@ -11,21 +12,25 @@ import {
   Calendar,
   Eye,
   Bookmark,
-  Building2,
+  BookmarkCheck,
   Mail,
   Phone,
 } from "lucide-react";
 
-export default function JobDetails() {
+import Sidebar from "@/src/components/layout/Sidebar";
+
+const JobDetails = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bookmarked, setBookmarked] = useState(false);
 
   const fetchJob = async () => {
     try {
       const res = await api.get(`/job/posts/${id}`);
       setJob(res.data);
+      setBookmarked(res.data?.bookmarked || false);
       fetchCompany(res.data.company);
     } catch (error) {
       toast.error("Failed to fetch job details.");
@@ -44,6 +49,26 @@ export default function JobDetails() {
     }
   };
 
+  const handleApply = () => {
+    toast.success("Redirecting to application..."); // replace with logic/modal
+    // window.open(`/apply/${id}`, "_blank");
+  };
+
+  const toggleBookmark = async () => {
+    try {
+      if (bookmarked) {
+        await api.delete(`/job/posts/${id}/bookmark`);
+        toast.success("Removed from saved jobs");
+      } else {
+        await api.post(`/job/posts/${id}/bookmark`);
+        toast.success("Saved job");
+      }
+      setBookmarked(!bookmarked);
+    } catch (error) {
+      toast.error("Failed to update bookmark.");
+    }
+  };
+
   useEffect(() => {
     fetchJob();
   }, [id]);
@@ -54,13 +79,12 @@ export default function JobDetails() {
   return (
     <PageTemplate>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Company Card */}
-        <div className="space-y-4">
+        <Sidebar position="left">
           {company && (
             <Card>
-              <CardContent className="p-4 flex flex-col items-center text-center">
+              <CardContent className="p-4 flex flex-col items-center text-center space-y-2">
                 <img
-                  src={company.avatar || "/assets/company.svg"}
+                  src={company.logo || "/assets/company.svg"}
                   alt={company.name}
                   className="w-24 h-24 mb-2 rounded-full object-cover"
                 />
@@ -70,7 +94,7 @@ export default function JobDetails() {
                   {company.location}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {company.industry} • {company.company_size}
+                  {company.industry_name} • {company.company_size}
                 </p>
                 {company.phone_number && (
                   <p className="text-sm flex items-center justify-center">
@@ -86,16 +110,39 @@ export default function JobDetails() {
                 )}
                 <Link
                   to={`/companies/${company.id}`}
-                  className="mt-3 inline-block text-blue-600 text-sm hover:underline"
+                  className="inline-block text-blue-600 text-sm hover:underline"
                 >
                   View Company Profile
                 </Link>
+
+                {/* ✅ ACTION BUTTONS */}
+                <div className="mt-4 flex flex-col gap-2 w-full">
+                  <Button onClick={handleApply} className="w-full">
+                    Apply Now
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={toggleBookmark}
+                    className="w-full flex items-center justify-center gap-1 text-neutral-500"
+                  >
+                    {bookmarked ? (
+                      <>
+                        <BookmarkCheck className="w-4 h-4" />
+                        Saved
+                      </>
+                    ) : (
+                      <>
+                        <Bookmark className="w-4 h-4" />
+                        Save Job
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
-        </div>
+        </Sidebar>
 
-        {/* Job Details */}
         <div className="md:col-span-2 space-y-4">
           <Card>
             <CardContent className="p-6 space-y-4">
@@ -122,8 +169,7 @@ export default function JobDetails() {
                 <strong>Salary:</strong> {job.salary}
               </div>
               <div className="text-sm text-muted-foreground">
-                <strong>Posted on:</strong>{" "}
-                {new Date(job.created_at).toLocaleDateString()}
+                <strong>Posted on:</strong> {new Date(job.created_at).toLocaleDateString()}
               </div>
               <div className="text-sm text-muted-foreground">
                 <strong>Status:</strong> {job.is_active ? "Active" : "Closed"}
@@ -132,7 +178,7 @@ export default function JobDetails() {
                 <strong>Description:</strong>
                 <p className="whitespace-pre-line mt-2">{job.description}</p>
               </div>
-              {job.skills && job.skills.length > 0 && (
+              {job.skills?.length > 0 && (
                 <div className="mt-4">
                   <strong>Skills:</strong>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -149,3 +195,5 @@ export default function JobDetails() {
     </PageTemplate>
   );
 }
+
+export default JobDetails;

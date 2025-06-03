@@ -4,30 +4,50 @@ import api from "@/src/api";
 import PageTemplate from "@/src/components/PageTemplate";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/src/components/ui/button";
 import { toast } from "sonner";
 import {
   Eye,
   ThumbsUp,
   Bookmark,
+  BookmarkCheck,
   UserCircle,
   CalendarDays,
   MessageCircle,
 } from "lucide-react";
 
+import Sidebar from "@/src/components/layout/Sidebar";
 
-export default function BlogPosts() {
+const BlogPosts =() => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bookmarked, setBookmarked] = useState(false);
 
   const fetchPost = async () => {
     try {
       const res = await api.get(`/blog/posts/${id}`);
       setPost(res.data);
+      setBookmarked(res.data?.bookmarked || false);
     } catch (error) {
       toast.error("Failed to fetch blog post.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleBookmark = async () => {
+    try {
+      if (bookmarked) {
+        await api.delete(`/blog/posts/${id}/bookmark`);
+        toast.success("Removed from saved posts");
+      } else {
+        await api.post(`/blog/posts/${id}/bookmark`);
+        toast.success("Saved post");
+      }
+      setBookmarked(!bookmarked);
+    } catch (error) {
+      toast.error("Failed to update bookmark.");
     }
   };
 
@@ -41,25 +61,46 @@ export default function BlogPosts() {
   return (
     <PageTemplate>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Author Card */}
-        <div className="space-y-4">
+        {/* Sidebar for author and actions */}
+        <Sidebar position="left">
           <Card>
-            <CardContent className="p-4 flex flex-col items-center text-center">
+            <CardContent className="p-4 flex flex-col items-center text-center space-y-2">
+              <UserCircle className="w-16 h-16 text-muted-foreground" />
               <h2 className="text-lg font-semibold">{post.author_name}</h2>
               <p className="text-sm text-muted-foreground flex items-center justify-center">
-                <UserCircle className="w-4 h-4 mr-1" />
                 Author
               </p>
+
+              {/* Save Post Button */}
+              <div className="mt-4 w-full">
+                <Button
+                  variant="outline"
+                  onClick={toggleBookmark}
+                  className="w-full flex items-center justify-center bg-primary gap-1"
+                >
+                  {bookmarked ? (
+                    <>
+                      <BookmarkCheck className="w-4 h-4" />
+                      Saved
+                    </>
+                  ) : (
+                    <>
+                      <Bookmark className="w-4 h-4" />
+                      Save Post
+                    </>
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
-        </div>
+        </Sidebar>
 
-        {/* Blog Post */}
+        {/* Blog Post Content */}
         <div className="md:col-span-2 space-y-6">
           <Card>
             <CardContent className="p-6 space-y-4">
               <h1 className="text-2xl font-bold">{post.title}</h1>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
                 <span className="flex items-center">
                   <CalendarDays className="h-4 w-4 mr-1" />
                   {new Date(post.created_at).toLocaleDateString()}
@@ -78,16 +119,18 @@ export default function BlogPosts() {
                 </span>
               </div>
 
-              <div className="prose max-w-none whitespace-pre-line text-sm text-gray-800">
+              {/* Blog Post Content */}
+              <div className="text-sm text-muted-foreground whitespace-pre-line">
                 {post.content}
               </div>
 
+              {/* Blog Post Tags */}
               {post.tags?.length > 0 && (
                 <div className="mt-4">
                   <strong>Tags:</strong>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {post.tags.map((tag) => (
-                      <Badge key={tag.id} className="bg-blue-100 text-blue-800">
+                      <Badge key={tag.id}>
                         {tag.name}
                       </Badge>
                     ))}
@@ -97,7 +140,7 @@ export default function BlogPosts() {
             </CardContent>
           </Card>
 
-          {/* Comments */}
+          {/* Comments Section */}
           <Card>
             <CardContent className="p-6 space-y-4">
               <h2 className="text-lg font-semibold flex items-center">
@@ -109,31 +152,31 @@ export default function BlogPosts() {
               ) : (
                 <div className="space-y-4">
                   {post.comments.map((comment) => (
-                    <div key={comment.id} className="p-4 bg-muted/40 rounded-lg">
-                      <div className="text-sm text-gray-800 mb-1">{comment.content}</div>
-                      <div className="text-xs text-muted-foreground">
-                        By User #{comment.author} on{" "}
-                        {new Date(comment.created_at).toLocaleDateString()}
-                      </div>
-
-                      {/* Replies (optional, extendable) */}
-                      {comment.replies?.length > 0 && (
-                        <div className="ml-4 mt-2 space-y-2">
-                          {comment.replies.map((reply) => (
-                            <div
-                              key={reply.id}
-                              className="p-2 bg-muted rounded text-sm text-gray-700"
-                            >
-                              <div>{reply.content}</div>
-                              <div className="text-xs text-muted-foreground">
-                                By User #{reply.author} on{" "}
-                                {new Date(reply.created_at).toLocaleDateString()}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                  <div key={comment.id} className="p-4 bg-muted/40 rounded-lg">
+                    <div className="text-sm text-foreground mb-1">{comment.content}</div>
+                    <div className="text-xs text-muted-foreground">
+                      By User #{comment.author} on{" "}
+                      {new Date(comment.created_at).toLocaleDateString()}
                     </div>
+
+                    {/* Replies (optional) */}
+                    {comment.replies?.length > 0 && (
+                      <div className="ml-4 mt-2 space-y-2">
+                        {comment.replies.map((reply) => (
+                          <div
+                            key={reply.id}
+                            className="p-2 bg-muted rounded text-sm text-foreground"
+                          >
+                            <p>{reply.content}</p>
+                            <div className="text-xs text-muted-foreground">
+                              By User #{reply.author} on{" "}
+                              {new Date(reply.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   ))}
                 </div>
               )}
@@ -144,3 +187,5 @@ export default function BlogPosts() {
     </PageTemplate>
   );
 }
+
+export default BlogPosts

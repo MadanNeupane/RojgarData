@@ -21,9 +21,11 @@ import {
   MapPin,
 } from "lucide-react";
 import PageTemplate from "@/src/components/PageTemplate";
+import Sidebar from "@/src/components/layout/Sidebar";
 import { toast } from "sonner";
 
-export default function CompanyDetails() {
+
+const CompanyDetails = () => {
   const { id } = useParams();
   const [company, setCompany] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -119,17 +121,15 @@ export default function CompanyDetails() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 md:gap-6">
           {/* Sidebar */}
-          <div className="space-y-4 md:col-span-1">
+          <Sidebar position="left">
             <Card>
               <CardContent className="p-4 flex flex-col items-center">
                 <img
-                  src={company.avatar || defaultAvatar}
+                  src={company.logo || defaultAvatar}
                   alt={company.name}
                   className="w-24 h-24 mb-2"
                 />
-                <h2 className="text-lg font-semibold text-center">
-                  {company.name}
-                </h2>
+                <h2 className="text-lg font-semibold text-center">{company.name}</h2>
                 <p className="text-sm text-muted-foreground">
                   <MapPin className="inline-block mr-1 h-4 w-4" />
                   {company.location}
@@ -137,19 +137,13 @@ export default function CompanyDetails() {
                 <p className="text-sm text-muted-foreground">
                   {company.industry} • {company.company_size}
                 </p>
-                {company.phone_number && (
-                  <p className="text-sm">{company.phone_number}</p>
-                )}
-                {company.work_emails && (
-                  <p className="text-sm">{company.work_emails}</p>
-                )}
+                {company.phone_number && <p className="text-sm">{company.phone_number}</p>}
+                {company.work_emails && <p className="text-sm">{company.work_emails}</p>}
                 <p className="text-xs text-muted-foreground mt-2">
                   <EyeIcon className="inline-block mr-1" />
                   {company.view_count} views • {company.total_followers} followers
                 </p>
-                <Button className="mt-2" onClick={handleFollow}>
-                  Follow
-                </Button>
+                <Button className="mt-2" onClick={handleFollow}>Follow</Button>
               </CardContent>
             </Card>
 
@@ -171,7 +165,7 @@ export default function CompanyDetails() {
                 </CardContent>
               </Card>
             )}
-          </div>
+          </Sidebar>
 
           {/* Main content */}
           <div className="md:col-span-2">
@@ -351,3 +345,5 @@ export default function CompanyDetails() {
     </PageTemplate>
   );
 }
+
+export default CompanyDetails;

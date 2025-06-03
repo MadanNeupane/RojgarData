@@ -80,7 +80,7 @@ const BlogList = () => {
                 <CardContent className="p-4 space-y-3">
                   <div className="space-y-1">
                     <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-                      <Link to={`/blog/${id}`} className="hover:underline">
+                      <Link to={`/blogs/${id}`} className="hover:underline">
                         {title}
                       </Link>
                     </h3>

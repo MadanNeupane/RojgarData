@@ -2,7 +2,7 @@ import logo from "../assets/logo.svg";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export default function Footer() {
+const Footer = () => {
   return (
     <footer className="text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-800">
       <div className="mx-auto px-4 md:px-12 lg:px-24 pb-10 md grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -57,3 +57,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default Footer

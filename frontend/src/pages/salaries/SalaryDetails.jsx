@@ -5,30 +5,46 @@ import PageTemplate from "@/src/components/PageTemplate";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
 import { toast } from "sonner";
-import { CalendarDays, ShieldCheck, UserCircle } from "lucide-react";
+import {
+  CalendarDays,
+  ShieldCheck,
+  UserCircle,
+  Building2,
+  Briefcase,
+  MonitorCheck,
+  TrendingUp,
+  Clock,
+} from "lucide-react";
 
-export default function SalaryDetails() {
+const SalaryDetails = () => {
   const { id } = useParams();
   const [salary, setSalary] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSalary = async () => {
-    try {
-      const res = await api.get(`/salary/salaries/${id}`);
-      setSalary(res.data);
-    } catch (error) {
-      toast.error("Failed to fetch salary details.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchSalary = async () => {
+      try {
+        const res = await api.get(`/salary/salaries/${id}`);
+        setSalary(res.data);
+      } catch {
+        toast.error("Failed to fetch salary details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchSalary();
   }, [id]);
 
   if (loading) return <div className="p-6 text-center text-muted">Loading...</div>;
   if (!salary) return <div className="p-6 text-center text-muted">Salary data not found.</div>;
+
+  const InfoItem = ({ icon: Icon, label, value }) => (
+    <span className="flex items-center gap-1">
+      <Icon className="w-4 h-4 text-muted-foreground" />
+      <strong>{label}:</strong> {value}
+    </span>
+  );
 
   return (
     <PageTemplate>
@@ -46,36 +62,23 @@ export default function SalaryDetails() {
             </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <span>
-                <strong>Company ID:</strong> {salary.company_name}
-              </span>
-              <span>
-                <strong>Status:</strong> {salary.work_status}
-              </span>
-              <span>
-                <strong>Work Type:</strong> {salary.work_type.replace("_", " ")}
-              </span>
-              <span>
-                <strong>Seniority:</strong> {salary.seniority}
-              </span>
-              <span>
-                <strong>Experience:</strong> {salary.years_of_experience} years
-              </span>
-              <span className="flex items-center">
-                <CalendarDays className="w-4 h-4 mr-1" />
-                {new Date(salary.created_at).toLocaleDateString()}
-              </span>
+              <InfoItem icon={Building2} label="Company" value={salary.company_name} />
+              <InfoItem icon={Briefcase} label="Status" value={salary.work_status} />
+              <InfoItem icon={MonitorCheck} label="Work Type" value={salary.work_type.replace("_", " ")} />
+              <InfoItem icon={TrendingUp} label="Seniority" value={salary.seniority} />
+              <InfoItem icon={Clock} label="Experience" value={`${salary.years_of_experience} years`} />
+              <InfoItem icon={CalendarDays} label="Date" value={new Date(salary.created_at).toLocaleDateString()} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                 <h2 className="text-sm font-semibold mb-1">Base Salary</h2>
                 <p className="text-lg font-bold">
                   {salary.currency} {salary.salary_amount.toLocaleString()} / {salary.payment_period}
                 </p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                 <h2 className="text-sm font-semibold mb-1">Bonus</h2>
                 <p className="text-lg font-bold">
                   {salary.currency} {salary.bonus.toLocaleString()} / {salary.bonus_payment_period}
@@ -93,3 +96,5 @@ export default function SalaryDetails() {
     </PageTemplate>
   );
 }
+
+export default SalaryDetails
