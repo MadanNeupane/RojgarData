@@ -1,51 +1,51 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Login from './pages/accounts/Login'
-import EmployerRegister from './pages/accounts/EmployerRegister'
-import JobseekerRegister from './pages/accounts/JobseekerRegister'
-import Home from './pages/home/Home'
-import NotFound from './pages/NotFound'
-import ProtectedRoute from './components/ProtectedRoute'
-import JobsList from './pages/jobs/JobList'
-import JobDetail from './pages/jobs/JobDetails'
-import CompanyDetails from './pages/companies/CompanyDetails'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { AuthProvider } from './context/AuthContext';
 
-import { Toaster } from "sonner";
-import BlogPosts from './pages/blogs/BlogPosts'
-import SalaryDetails from './pages/salaries/SalaryDetails'
-import SalaryList from './pages/salaries/SalaryList'
-import CompanyList from './pages/companies/CompanyList'
-import BlogList from './pages/blogs/BlogList'
-
-
-
-const Logout = () => {
-  localStorage.clear()
-  return <Navigate to="/login" />
-}
+import Login from './pages/accounts/Login';
+import Logout from './pages/accounts/Logout';
+import EmployerRegister from './pages/accounts/EmployerRegister';
+import JobseekerRegister from './pages/accounts/JobseekerRegister';
+import Home from './pages/home/Home';
+import NotFound from './pages/NotFound';
+import JobsList from './pages/jobs/JobList';
+import JobDetail from './pages/jobs/JobDetails';
+import CompanyList from './pages/companies/CompanyList';
+import CompanyDetails from './pages/companies/CompanyDetails';
+import BlogList from './pages/blogs/BlogList';
+import BlogPosts from './pages/blogs/BlogPosts';
+import SalaryList from './pages/salaries/SalaryList';
+import SalaryDetails from './pages/salaries/SalaryDetails';
 
 
-const App = () => {
-  return (
+const routes = [
+  { path: '/', element: <Home /> },
+  { path: '/login', element: <Login /> },
+  { path: '/logout', element: <Logout /> },
+  { path: '/employer/register', element: <EmployerRegister /> },
+  { path: '/jobseeker/register', element: <JobseekerRegister /> },
+  { path: '/jobs', element: <JobsList /> },
+  { path: '/jobs/:id', element: <JobDetail /> },
+  { path: '/companies', element: <CompanyList /> },
+  { path: '/companies/:id', element: <CompanyDetails /> },
+  { path: '/blogs', element: <BlogList /> },
+  { path: '/blogs/:id', element: <BlogPosts /> },
+  { path: '/salaries', element: <SalaryList /> },
+  { path: '/salaries/:id', element: <SalaryDetails /> },
+  { path: '*', element: <NotFound /> }
+];
+
+const App = () => (
+  <AuthProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/employer/register" element={<EmployerRegister />} />
-        <Route path="/jobseeker/register" element={<JobseekerRegister />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/jobs" element={<ProtectedRoute><JobsList /></ProtectedRoute>} />
-        <Route path="/jobs/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
-        <Route path="/companies" element={<ProtectedRoute><CompanyList /></ProtectedRoute>} />
-        <Route path="/companies/:id" element={<ProtectedRoute><CompanyDetails /></ProtectedRoute>} />
-        <Route path="/blogs" element={<ProtectedRoute><BlogList /></ProtectedRoute>} />
-        <Route path="/salaries" element={<ProtectedRoute><SalaryList /></ProtectedRoute>} />
-        <Route path="/salaries/:id" element={<ProtectedRoute><SalaryDetails /></ProtectedRoute>} />
-        <Route path="*" element={<NotFound />} />
+        {routes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
       </Routes>
       <Toaster richColors position="top-center" />
-
     </BrowserRouter>
-  )
-}
+  </AuthProvider>
+);
 
-export default App
+export default App;
