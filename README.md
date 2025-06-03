@@ -42,23 +42,22 @@ RojgarData is developed and maintained by a sole developer committed to improvin
 - [ ] Optimize Data Models Based on User Research
 
 🎨 Frontend
-- [ ] Fix Protected Route Access Issues
-- [ ] Standardize API Calls Across the App
+- [x] Fix Protected Route Access Issues
+- [x] Standardize API Calls Across the App
 - [ ] Complete Incomplete Form Submissions (e.g., Reviews, Salaries)
-- [ ] Unify Layout and Fix Visual Inconsistencies (e.g., link hover styles)
+- [x] Unify Layout and Fix Visual Inconsistencies (e.g., link hover styles)
 - [ ] Develop Employer Dashboard / Dedicated Page
 - [ ] Build Job and Blog Post Creation Interfaces
-- [ ] Refactor Repeated UI into Reusable Components
-- [ ] Fix ESLint Errors and Module Import Issues
-- [ ] Add Theme Toggle (Light/Dark Mode)
+- [x] Refactor Repeated UI into Reusable Components
+- [x] Add Theme Toggle (Light/Dark Mode)
 - [ ] Develop Settings Page
 - [ ] Improve Bookmarking and Application Functionality
-- [ ] Refactor Login/Register with Role-Based View (Jobseeker/Employer)
-- [ ] Create a Unified Search Page
+- [x] Refactor Login/Register with Role-Based View (Jobseeker/Employer)
+- [x] Create a Unified Search Page
 - [ ] Add a Featured Section for Companies and Jobs
 - [ ] Implement Advertisement Slots and Reporting Features
 - [ ] Add SEO Meta Tags
-- [ ] Make Landing Page Dynamic (Remove Placeholder Content)
+- [x] Make Landing Page Dynamic (Remove Placeholder Content)
 
 🧹 Maintenance & Deployment
 - [ ] Clean Up Unused Files and Code
