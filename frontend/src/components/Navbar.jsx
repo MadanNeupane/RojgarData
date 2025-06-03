@@ -71,7 +71,7 @@ const Navbar = () => {
     <header className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 sm:px-6 lg:px-24">
         <Link to="/" className="flex items-center gap-2 hover:no-underline">
-          <img src={logo} alt="Logo" className="h-8 w-8" />
+          <img src={logo} alt="Logo" className="h-8 w-8 md:hidden dark:invert" />
           <span className="hidden text-xl font-bold text-indigo-600 dark:text-emerald-400 md:inline">
             RojgarData
           </span>
@@ -106,13 +106,13 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 {userLinks.map(({ label, icon: Icon, path }) => (
                   <Link to={path} key={path}>
-                    <DropdownMenuItem className="flex items-center gap-2">
+                    <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                       <Icon className="h-4 w-4" />
                       {label}
                     </DropdownMenuItem>
                   </Link>
                 ))}
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-50 flex items-center gap-2">
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer">
                   <LogOut className="h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
