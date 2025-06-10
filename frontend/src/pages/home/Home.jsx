@@ -12,6 +12,7 @@ import Newsletter from "@/src/components/Newsletter";
 import Footer from "@/src/components/Footer";
 import HeroSection from "@/src/components/HeroSection";
 import SearchBar from "@/src/components/SearchBar";
+import MetaTags from "@/src/components/MetaTags";
 
 const SkeletonCard = () => (
   <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-40 rounded-md" />
@@ -47,6 +48,7 @@ const Home = () => {
 
   return (
     <>
+      <MetaTags title="Home" description="RojgarData - Find Your Dream Job" image="/rojgardata.png" name="RojgarData" />
       <Navbar />
       <div className="space-y-12">
         <HeroSection
