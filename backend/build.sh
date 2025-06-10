@@ -5,6 +5,9 @@ pip install -r requirements.txt
 
 python manage.py collectstatic --no-input
 
+python manage.py makemigrations
 python manage.py migrate
 
 python create_superuser.py
+
+python manage.py loaddata fixtures/samplefixture.json

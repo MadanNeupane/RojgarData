@@ -75,7 +75,7 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
           const { access, refresh } = response.data;
           localStorage.setItem(ACCESS_TOKEN, access);
           localStorage.setItem(REFRESH_TOKEN, refresh);
-          navigate("/");
+          navigate("/login");
         }
       } else {
         const response = await api.post("/accounts/jwt/create/", {
@@ -102,14 +102,14 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
     <section className="flex flex-col lg:flex-row items-center min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="hidden lg:flex flex-col justify-center items-center w-1/2 p-10">
         <h1 className="text-3xl font-extrabold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
-          {authType === "register" ? "Create your journey" : "Welcome back!"}
+          {authType === "register" ? "Begin your career adventure" : "Good to see you again!"}
         </h1>
         <div className="text-xl text-gray-700 dark:text-gray-300 mb-4">
           <Typewriter
             options={{
               strings: authType === "register"
-                ? ["Jobseeker or Employer?", "Build your future.", "Start exploring opportunities.", "Full control over employment."]
-                : ["Log in to discover.", "New jobs every day.", "Get Salary Insights.", "Companies waiting for you!"],
+                ? ["Are you a Jobseeker or Employer?", "Shape your career path.", "Find the right opportunities.", "Take charge of your future with insights."]
+                : ["Unlock new possibilities.", "Fresh job listings daily.", "Know your worth with Salary Insights.", "Company reviews and career tips await!"],
               autoStart: true,
               loop: true,
               delay: 50,
@@ -132,7 +132,9 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
             </h2>
             <p className="text-sm text-gray-500 mb-4">
               {authType === "register"
-                ? "Nice to meet you! Let's get started."
+                ? role === "jobseeker"
+                  ? "Nice to meet you! Let's get started as a jobseeker."
+                  : "Nice to meet you! Let's get started as an employer."
                 : "Welcome back!"}
             </p>
 
