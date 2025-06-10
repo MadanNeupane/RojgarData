@@ -26,12 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t7s9dc3^3cr6o1k@zfwx%p44!+jtotd-1m@3u(@8+i3av2qzrk'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
 
-ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -165,10 +164,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 if DEBUG:
+    ALLOWED_HOSTS = ['*']
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'static'),
     ]
 else:
+    ALLOWED_HOSTS = ['rojgardata.com', 'rojgardata-bush.onrender.com']
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
