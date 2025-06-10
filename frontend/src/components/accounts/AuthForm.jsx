@@ -75,7 +75,7 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
           const { access, refresh } = response.data;
           localStorage.setItem(ACCESS_TOKEN, access);
           localStorage.setItem(REFRESH_TOKEN, refresh);
-          navigate("/");
+          navigate("/login");
         }
       } else {
         const response = await api.post("/accounts/jwt/create/", {
@@ -132,7 +132,9 @@ const AuthForm = ({ type, role = "jobseeker" }) => {
             </h2>
             <p className="text-sm text-gray-500 mb-4">
               {authType === "register"
-                ? "Nice to meet you! Let's get started."
+                ? role === "jobseeker"
+                  ? "Nice to meet you! Let's get started as a jobseeker."
+                  : "Nice to meet you! Let's get started as an employer."
                 : "Welcome back!"}
             </p>
 
