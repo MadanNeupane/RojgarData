@@ -10,8 +10,8 @@ admin.site.index_title = "Welcome to Rojgar Data Admin Portal"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('contact/', include('pages.urls')),  # Add trailing slash for consistency
     path('api/v1/', include(([
+        path('contact/', include('pages.urls')),  # Add trailing slash for consistency
         path('accounts/', include('accounts.urls')),
         path('accounts/', include('djoser.urls')),
         path('accounts/', include('djoser.urls.jwt')),
