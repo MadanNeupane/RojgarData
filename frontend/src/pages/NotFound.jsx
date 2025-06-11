@@ -20,6 +20,10 @@ const NotFound = () => {
             Back to homepage
           </Button>
         </Link>
+        <p className="mt-4 text-gray-500 dark:text-gray-400">
+          If you want to know more about us, you can visit our{" "}
+          <Link to="/about">about page</Link>.
+        </p>
       </div>
     </PageTemplate>
   );

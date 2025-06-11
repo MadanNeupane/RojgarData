@@ -8,6 +8,7 @@ import EmployerRegister from './pages/accounts/EmployerRegister';
 import JobseekerRegister from './pages/accounts/JobseekerRegister';
 import Home from './pages/home/Home';
 import About from './pages/home/About';
+import Contact from './pages/home/Contact';
 import NotFound from './pages/NotFound';
 import JobsList from './pages/jobs/JobList';
 import JobDetail from './pages/jobs/JobDetails';
@@ -22,6 +23,7 @@ import SalaryDetails from './pages/salaries/SalaryDetails';
 const routes = [
   { path: '/', element: <Home /> },
   { path: '/About', element: <About /> },
+  { path: '/contact', element: <Contact /> },
   { path: '/login', element: <Login /> },
   { path: '/logout', element: <Logout /> },
   { path: '/employer/register', element: <EmployerRegister /> },

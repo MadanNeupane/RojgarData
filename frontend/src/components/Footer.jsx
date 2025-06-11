@@ -52,7 +52,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="border-t text-center py-4 text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} RojgarData. All rights reserved. Made with &#10084; by <a href="https://madan.codes" className="text-primary">Madan Neupane</a>.
+        &copy; {new Date().getFullYear()} RojgarData. All rights reserved. Developed with &#10084; and vision by <a href="https://madan.codes" className="text-primary">Madan Neupane</a>.
       </div>
     </footer>
   );
