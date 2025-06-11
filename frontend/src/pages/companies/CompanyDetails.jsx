@@ -49,6 +49,7 @@ const CompanyDetails = () => {
 
   const [review, setReview] = useState({
     review_headline: "",
+    review_text: "",
     rating: 0,
     pros: "",
     cons: "",
@@ -103,9 +104,10 @@ const CompanyDetails = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post(`/company/companies/${id}/review`, review);
+      await api.post(`/company/companies/${id}/reviews/`, review);
       setReview({
         review_headline: "",
+        review_text: "",
         rating: 0,
         pros: "",
         cons: "",
@@ -122,7 +124,7 @@ const CompanyDetails = () => {
   const handleQuestionSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post(`/company/companies/${id}/question`, question);
+      await api.post(`/company/companies/${id}/questions/`, question);
       setQuestion({ question_text: "" });
       toast.success("Question submitted");
       fetchCompany();
@@ -256,6 +258,11 @@ const CompanyDetails = () => {
                       setReview({ ...review, review_headline: e.target.value })
                     }
                   />
+                  <Textarea
+                    placeholder="Review"
+                    value={review.review_text}
+                    onChange={(e) => setReview({ ...review, review_text: e.target.value })}
+                  />
                   <Input
                     type="number"
                     min="1"
@@ -301,6 +308,7 @@ const CompanyDetails = () => {
                     <Card key={r.id}>
                       <CardContent className="p-4">
                         <h4 className="font-medium">{r.review_headline}</h4>
+                        <p className="text-sm">{r.review_text}</p>
                         <p className="text-sm">⭐ {r.rating} / 5</p>
                         <p className="text-sm">
                           <strong>Pros:</strong> {r.pros}

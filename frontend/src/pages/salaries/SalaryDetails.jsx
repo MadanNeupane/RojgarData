@@ -60,7 +60,7 @@ const SalaryDetails = () => {
             <div className="flex justify-between items-center">
               <h1 className="text-xl font-bold">{salary.job_title}</h1>
               {salary.is_verified && (
-                <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                <Badge className="bg-green-100 text-green-800 flex items-center gap-1 hover:bg-green-200">
                   <ShieldCheck className="w-4 h-4" />
                   Verified
                 </Badge>

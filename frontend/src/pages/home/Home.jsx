@@ -17,6 +17,19 @@ const SkeletonCard = () => (
   <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-40 rounded-md" />
 );
 
+const SectionHeader = ({ title, link }) => (
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-xl font-semibold">{title}</h2>
+    <Link
+      to={link}
+      className="group inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+    >
+      Explore more
+      <ArrowRight className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+    </Link>
+  </div>
+);
+
 const Home = () => {
   const [jobs, setJobs] = useState(null);
   const [companies, setCompanies] = useState(null);
@@ -32,7 +45,6 @@ const Home = () => {
           api.get("/salary/salaries/?limit=2"),
           api.get("/blog/posts/?limit=3"),
         ]);
-
         setJobs(jobsRes.data?.results || []);
         setCompanies(companiesRes.data?.results || []);
         setSalaries(salariesRes.data?.results || []);
@@ -41,7 +53,6 @@ const Home = () => {
         console.error("Failed to fetch data:", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -80,11 +91,11 @@ const Home = () => {
         </section>
 
         {/* Jobs */}
-        {jobs?.length > 0 && (
-          <section className="px-4 md:px-12 lg:px-24">
-            <SectionHeader title="Recent Jobs" link="/jobs" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {jobs.map((job) => (
+        <section className="px-4 md:px-12 lg:px-24">
+          <SectionHeader title="Recent Jobs" link="/jobs" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {(jobs ? jobs : Array(4).fill(null)).map((job, idx) =>
+              job ? (
                 <Card key={job.id} className="rounded-md hover:shadow-md transition">
                   <CardContent className="p-4">
                     <h3 className="text-md font-medium">
@@ -106,17 +117,19 @@ const Home = () => {
                     </Link>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </section>
-        )}
+              ) : (
+                <SkeletonCard key={idx} />
+              )
+            )}
+          </div>
+        </section>
 
         {/* Companies */}
-        {companies?.length > 0 && (
-          <section className="px-4 md:px-12 lg:px-24">
-            <SectionHeader title="Top Companies" link="/companies" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {companies.map((company) => (
+        <section className="px-4 md:px-12 lg:px-24">
+          <SectionHeader title="Top Companies" link="/companies" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {(companies ? companies : Array(5).fill(null)).map((company, idx) =>
+              company ? (
                 <Card key={company.id} className="text-center rounded-md hover:shadow-md transition">
                   <CardContent className="p-4">
                     <img
@@ -131,22 +144,25 @@ const Home = () => {
                     </Link>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </section>
-        )}
+              ) : (
+                <SkeletonCard key={idx} />
+              )
+            )}
+          </div>
+        </section>
 
         {/* Salaries */}
-        {salaries?.length > 0 && (
-          <section className="px-4 md:px-12 lg:px-24">
-            <SectionHeader title="Salary Insights" link="/salaries" />
-            <div className="space-y-2">
-              {salaries.map((salary) => (
+        <section className="px-4 md:px-12 lg:px-24">
+          <SectionHeader title="Salary Insights" link="/salaries" />
+          <div className="space-y-2">
+            {(salaries ? salaries : Array(2).fill(null)).map((salary, idx) =>
+              salary ? (
                 <div key={salary.id} className="border p-4 rounded-md">
                   <h3 className="font-medium">
                     <Link to={`/salaries/${salary.id}`} className="hover:underline text-blue-500">
                       {salary.job_title}
-                    </Link> {salary.is_verified && <ShieldCheck className="inline-block w-4 h-4" />}
+                    </Link>{" "}
+                    {salary.is_verified && <ShieldCheck className="inline-block w-4 h-4" />}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300">
                     {salary.currency} {salary.salary_amount}/{salary.payment_period} • {salary.work_type} • {salary.seniority}
@@ -155,17 +171,19 @@ const Home = () => {
                     <Building className="inline-block w-4 h-4 mr-1" />{salary.company_name}
                   </p>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              ) : (
+                <SkeletonCard key={idx} />
+              )
+            )}
+          </div>
+        </section>
 
         {/* Blogs */}
-        {blogs?.length > 0 && (
-          <section className="px-4 md:px-12 lg:px-24">
-            <SectionHeader title="Latest Blogs" link="/blogs" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {blogs.map((blog) => (
+        <section className="px-4 md:px-12 lg:px-24">
+          <SectionHeader title="Latest Blogs" link="/blogs" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {(blogs ? blogs : Array(3).fill(null)).map((blog, idx) =>
+              blog ? (
                 <Card key={blog.id} className="rounded-md hover:shadow-md transition">
                   <CardContent className="p-4 space-y-2">
                     <h3 className="font-bold text-lg">
@@ -191,10 +209,12 @@ const Home = () => {
                     </Link>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </section>
-        )}
+              ) : (
+                <SkeletonCard key={idx} />
+              )
+            )}
+          </div>
+        </section>
 
         <section className="px-4 md:px-12 lg:px-24 py-12 bg-gray-100 dark:bg-gray-800">
           <Newsletter />
@@ -205,18 +225,5 @@ const Home = () => {
     </>
   );
 };
-
-const SectionHeader = ({ title, link }) => (
-  <div className="flex justify-between items-center mb-4">
-    <h2 className="text-xl font-semibold">{title}</h2>
-    <Link
-      to={link}
-      className="group inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-    >
-      Explore more
-      <ArrowRight className="ml-1 w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
-    </Link>
-  </div>
-);
 
 export default Home;

@@ -87,6 +87,57 @@ const JobDetails = () => {
         <div className="p-6 text-center text-muted">Job not found.</div>
       ) : (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="md:col-span-2 space-y-4">
+          <Card>
+            <CardContent className="p-6 space-y-4">
+              <h1 className="text-2xl font-bold">{job.title}</h1>
+              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                <span className="flex items-center">
+                  <Briefcase className="h-4 w-4 mr-1" />
+                  {job.location}
+                </span>
+                <span className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  Deadline: {new Date(job.deadline).toLocaleDateString()}
+                </span>
+                <span className="flex items-center">
+                  <Eye className="h-4 w-4 mr-1" />
+                  {job.view_count} views
+                </span>
+                <span className="flex items-center">
+                  <Bookmark className="h-4 w-4 mr-1" />
+                  {job.total_bookmarks} bookmarks
+                </span>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <strong>Salary:</strong> {job.salary}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <strong>Posted on:</strong> {new Date(job.created_at).toLocaleDateString()}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <strong>Status:</strong> {job.is_active ? "Active" : "Closed"}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <strong>Description:</strong>
+                <p className="whitespace-pre-line mt-2">{job.description}</p>
+              </div>
+              {job.skills?.length > 0 && (
+                <div className="mt-4">
+                  <strong>Skills:</strong>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {job.skills.map((skill) => (
+                      <Badge key={skill.id}>{skill.name}</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
         <Sidebar position="left">
           {company && (
             <Card>
@@ -145,54 +196,6 @@ const JobDetails = () => {
           )}
         </Sidebar>
 
-        <div className="md:col-span-2 space-y-4">
-          <Card>
-            <CardContent className="p-6 space-y-4">
-              <h1 className="text-2xl font-bold">{job.title}</h1>
-              <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-                <span className="flex items-center">
-                  <Briefcase className="h-4 w-4 mr-1" />
-                  {job.location}
-                </span>
-                <span className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  Deadline: {new Date(job.deadline).toLocaleDateString()}
-                </span>
-                <span className="flex items-center">
-                  <Eye className="h-4 w-4 mr-1" />
-                  {job.view_count} views
-                </span>
-                <span className="flex items-center">
-                  <Bookmark className="h-4 w-4 mr-1" />
-                  {job.total_bookmarks} bookmarks
-                </span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <strong>Salary:</strong> {job.salary}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <strong>Posted on:</strong> {new Date(job.created_at).toLocaleDateString()}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <strong>Status:</strong> {job.is_active ? "Active" : "Closed"}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <strong>Description:</strong>
-                <p className="whitespace-pre-line mt-2">{job.description}</p>
-              </div>
-              {job.skills?.length > 0 && (
-                <div className="mt-4">
-                  <strong>Skills:</strong>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {job.skills.map((skill) => (
-                      <Badge key={skill.id}>{skill.name}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
       </div>
       )}
 
